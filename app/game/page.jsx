@@ -1,8 +1,8 @@
 "use client";
 import React, { use, useEffect, useState } from "react";
-import { Application, Assets, Container, Sprite } from 'pixi.js';
-
-
+import { Application, Assets, Point, Sprite } from 'pixi.js';
+import darkKnight from './GameAssets/DarkKnight.png';
+import knight from './GameAssets/knight.png';
 
 export default function Game() {
   useEffect(() => {
@@ -16,47 +16,76 @@ export default function Game() {
       // Append the application canvas to the document body
       document.body.appendChild(app.canvas);
 
-      // Create and add a container to the stage
-      const container = new Container();
-
-      app.stage.addChild(container);
-
-      // Load the bunny texture
-      const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
-
-      // Create a 5x5 grid of bunnies in the container
-      for (let i = 0; i < 25; i++) {
-        const bunny = new Sprite(texture);
-
-        bunny.x = (i % 5) * 40;
-        bunny.y = Math.floor(i / 5) * 40;
-        container.addChild(bunny);
+      // Load the texture
+      let texture;
+      try {
+        texture = await Assets.load(knight.src);
+      } catch (error) {
+        console.error('Failed to load texture:', error);
+        texture = await Assets.load('https://pixijs.com/assets/bunny.png');
       }
 
-      // Move the container to the center
-      container.x = app.screen.width / 2;
-      container.y = app.screen.height / 2;
+      const bunny = new Sprite(texture);
+      bunny.position.set(app.screen.width / 2, app.screen.height / 2);
+      bunny.height = 115;
+      bunny.width = 115;
+      bunny.velocity = new Point(0);
+      bunny.mass = 3;
 
-      // Center the bunny sprites in local container coordinates
-      container.pivot.x = container.width / 2;
-      container.pivot.y = container.height / 2;
-
-      // Create movement state object
+      console.log(app.stage.width)
       const movement = {
         up: false,
         down: false,
         left: false,
         right: false,
-        rotating: false
+        jump: false,
+        doubleJump: false,
+        canDoubleJump: true,
+        onGround: false,
       };
 
       // Listen for frame updates
       app.ticker.add((time) => {
-        if (movement.up) container.y -= 10 * time.deltaTime;
-        if (movement.down) container.y += 10 * time.deltaTime;
-        if (movement.left) container.x -= 10 * time.deltaTime;
-        if (movement.right) container.x += 10 * time.deltaTime;
-        if (movement.rotating) container.rotation += 0.01 * time.deltaTime;
+        const delta = time.deltaTime;
+
+        const gravity = new Point(0, 0.98);
+        bunny.velocity.x += gravity.x * delta;
+        bunny.velocity.y += gravity.y * delta;
+
+        bunny.x += bunny.velocity.x * delta;
+        bunny.y += bunny.velocity.y * delta;
+
+        function jump() {
+          if (bunny.y >= app.screen.height - bunny.height) {
+            bunny.velocity.y = -25;
+            bunny.y = app.screen.height - bunny.height; // Reset position to ground level
+          }
+        }
+
+        if (movement.up) bunny.y -= 3 * delta;
+        if (movement.down) bunny.y += 10 * delta;
+        if (movement.left) bunny.x -= 10 * delta;
+        if (movement.right) bunny.x += 10 * delta;
+        if (movement.jump) jump();
+
+        if (movement.onGround && movement.jump) {
+          jump();
+          movement.onGround = false;
+        }
+
+        if (movement.jump && !movement.onGround && movement.canDoubleJump) {
+          bunny.velocity.y = -7.5;
+          movement.canDoubleJump = false;
+        }
+
+        if (bunny.y < 0 || bunny.y > app.screen.height - bunny.height) {
+          bunny.y = Math.max(0, Math.min(bunny.y, app.screen.height - bunny.height));
+        }
+
+        if (bunny.x < 0 || bunny.x > app.screen.width - bunny.width) {
+          bunny.x = Math.max(0, Math.min(bunny.x, app.screen.width - bunny.width));
+        }
+      
       });
 
       // Handle keyboard input
@@ -79,7 +108,7 @@ export default function Game() {
             movement.right = true;
             break;
           case ' ':
-            movement.rotating = true;
+            movement.jump = true;
             break;
         }
       };
@@ -103,18 +132,20 @@ export default function Game() {
             movement.right = false;
             break;
           case ' ':
-            movement.rotating = false;
+            movement.jump = false;
             break;
         }
       };
+
+      app.stage.addChild(bunny);
 
       document.addEventListener('keydown', handleKeyDown);
       document.addEventListener('keyup', handleKeyUp);
 
       // Clean up event listeners when component unmounts
       return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-        document.removeEventListener('keyup', handleKeyUp);
+        document.removeEventListener('keydown', handleKeyDown, { once: true });
+        document.removeEventListener('keyup', handleKeyUp, { once: true });
         app.destroy();
       };
     })();
