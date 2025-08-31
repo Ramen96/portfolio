@@ -2,7 +2,7 @@
 import React, { use, useEffect, useState } from "react";
 import { Application, Assets, Point, Sprite } from 'pixi.js';
 import darkKnight from './GameAssets/DarkKnight.png';
-import knight from './GameAssets/knight.png';
+import knightPNG from './GameAssets/knight.png';
 
 export default function Game() {
   useEffect(() => {
@@ -19,18 +19,18 @@ export default function Game() {
       // Load the texture
       let texture;
       try {
-        texture = await Assets.load(knight.src);
+        texture = await Assets.load(knightPNG.src);
       } catch (error) {
         console.error('Failed to load texture:', error);
         texture = await Assets.load('https://pixijs.com/assets/bunny.png');
       }
 
-      const bunny = new Sprite(texture);
-      bunny.position.set(app.screen.width / 2, app.screen.height / 2);
-      bunny.height = 115;
-      bunny.width = 115;
-      bunny.velocity = new Point(0);
-      bunny.mass = 3;
+      const knight = new Sprite(texture);
+      knight.position.set(app.screen.width / 2, app.screen.height / 2);
+      knight.height = 115;
+      knight.width = 115;
+      knight.velocity = new Point(0);
+      knight.mass = 3;
 
       console.log(app.stage.width)
       const movement = {
@@ -49,23 +49,23 @@ export default function Game() {
         const delta = time.deltaTime;
 
         const gravity = new Point(0, 0.98);
-        bunny.velocity.x += gravity.x * delta;
-        bunny.velocity.y += gravity.y * delta;
+        knight.velocity.x += gravity.x * delta;
+        knight.velocity.y += gravity.y * delta;
 
-        bunny.x += bunny.velocity.x * delta;
-        bunny.y += bunny.velocity.y * delta;
+        knight.x += knight.velocity.x * delta;
+        knight.y += knight.velocity.y * delta;
 
         function jump() {
-          if (bunny.y >= app.screen.height - bunny.height) {
-            bunny.velocity.y = -25;
-            bunny.y = app.screen.height - bunny.height; // Reset position to ground level
+          if (knight.y >= app.screen.height - knight.height) {
+            knight.velocity.y = -25;
+            knight.y = app.screen.height - knight.height; // Reset position to ground level
           }
         }
 
-        if (movement.up) bunny.y -= 3 * delta;
-        if (movement.down) bunny.y += 10 * delta;
-        if (movement.left) bunny.x -= 10 * delta;
-        if (movement.right) bunny.x += 10 * delta;
+        if (movement.up) knight.y -= 3 * delta;
+        if (movement.down) knight.y += 10 * delta;
+        if (movement.left) knight.x -= 10 * delta;
+        if (movement.right) knight.x += 10 * delta;
         if (movement.jump) jump();
 
         if (movement.onGround && movement.jump) {
@@ -74,16 +74,16 @@ export default function Game() {
         }
 
         if (movement.jump && !movement.onGround && movement.canDoubleJump) {
-          bunny.velocity.y = -7.5;
+          knight.velocity.y = -7.5;
           movement.canDoubleJump = false;
         }
 
-        if (bunny.y < 0 || bunny.y > app.screen.height - bunny.height) {
-          bunny.y = Math.max(0, Math.min(bunny.y, app.screen.height - bunny.height));
+        if (knight.y < 0 || knight.y > app.screen.height - knight.height) {
+          knight.y = Math.max(0, Math.min(knight.y, app.screen.height - knight.height));
         }
 
-        if (bunny.x < 0 || bunny.x > app.screen.width - bunny.width) {
-          bunny.x = Math.max(0, Math.min(bunny.x, app.screen.width - bunny.width));
+        if (knight.x < 0 || knight.x > app.screen.width - knight.width) {
+          knight.x = Math.max(0, Math.min(knight.x, app.screen.width - knight.width));
         }
       
       });
@@ -137,7 +137,7 @@ export default function Game() {
         }
       };
 
-      app.stage.addChild(bunny);
+      app.stage.addChild(knight);
 
       document.addEventListener('keydown', handleKeyDown);
       document.addEventListener('keyup', handleKeyUp);
