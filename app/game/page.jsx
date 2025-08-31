@@ -52,10 +52,10 @@ export default function Game() {
 
       // Listen for frame updates
       app.ticker.add((time) => {
-        if (movement.up) container.y -= 5 * time.deltaTime;
-        if (movement.down) container.y += 5 * time.deltaTime;
-        if (movement.left) container.x -= 5 * time.deltaTime;
-        if (movement.right) container.x += 5 * time.deltaTime;
+        if (movement.up) container.y -= 10 * time.deltaTime;
+        if (movement.down) container.y += 10 * time.deltaTime;
+        if (movement.left) container.x -= 10 * time.deltaTime;
+        if (movement.right) container.x += 10 * time.deltaTime;
         if (movement.rotating) container.rotation += 0.01 * time.deltaTime;
       });
 
