@@ -32,14 +32,12 @@ export default function Game() {
       knight.velocity = new Point(0);
       knight.mass = 3;
 
-      console.log(app.stage.width)
       const movement = {
         up: false,
         down: false,
         left: false,
         right: false,
         jump: false,
-        doubleJump: false,
         canDoubleJump: true,
         onGround: false,
       };
@@ -55,32 +53,41 @@ export default function Game() {
         knight.x += knight.velocity.x * delta;
         knight.y += knight.velocity.y * delta;
 
-        function jump() {
-          if (knight.y >= app.screen.height - knight.height) {
-            knight.velocity.y = -25;
-            knight.y = app.screen.height - knight.height; // Reset position to ground level
-          }
-        }
+        // function jump() {
+        //   if (knight.y >= app.screen.height - knight.height) {
+        //     knight.velocity.y = -25;
+        //     knight.y = app.screen.height - knight.height; // Reset position to ground level
+        //   }
+        // }
 
         if (movement.up) knight.y -= 3 * delta;
         if (movement.down) knight.y += 10 * delta;
         if (movement.left) knight.x -= 10 * delta;
         if (movement.right) knight.x += 10 * delta;
-        if (movement.jump) jump();
 
-        if (movement.onGround && movement.jump) {
-          jump();
-          movement.onGround = false;
-        }
-
-        if (movement.jump && !movement.onGround && movement.canDoubleJump) {
-          knight.velocity.y = -7.5;
-          movement.canDoubleJump = false;
-        }
-
+         
+        // Prevent knight from going out of bounds and set onGround status
         if (knight.y < 0 || knight.y > app.screen.height - knight.height) {
           knight.y = Math.max(0, Math.min(knight.y, app.screen.height - knight.height));
+          movement.onGround = true;
+          movement.canDoubleJump = true; // Reset double jump when on ground
+          knight.velocity.y = 0; // Reset vertical velocity when on ground
         }
+
+        if (movement.onGround && movement.jump) {
+          knight.velocity.y = -25;
+          movement.onGround = false;
+          if (movement.onGround === false) {
+            knight.velocity.y = -25;
+          }
+          knight.y = app.screen.height - knight.height; // Reset position to ground level
+        }
+
+
+        // if (movement.onGround === false && movement.canDoubleJump && movement.jump) {
+        //   knight.velocity.y = -5; // Reduced jump height for double jump
+        //   movement.canDoubleJump = false; // Disable further double jumps until grounded  
+        // }
 
         if (knight.x < 0 || knight.x > app.screen.width - knight.width) {
           knight.x = Math.max(0, Math.min(knight.x, app.screen.width - knight.width));
