@@ -134,8 +134,10 @@ export default function Game() {
         }
       };
 
+      // Spawn the knight
       app.stage.addChild(knight);
 
+      // Add event listeners for keyboard input
       document.addEventListener('keydown', handleKeyDown);
       document.addEventListener('keyup', handleKeyUp);
 
