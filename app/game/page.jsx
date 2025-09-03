@@ -25,13 +25,15 @@ export default function Game() {
         texture = await Assets.load('https://pixijs.com/assets/bunny.png');
       }
 
+      // Create the knight sprite
       const knight = new Sprite(texture);
-      knight.position.set(app.screen.width / 2, app.screen.height / 2);
       knight.height = 115;
       knight.width = 115;
       knight.velocity = new Point(0);
       knight.mass = 3;
+      knight.position.set(app.screen.width / 2, app.screen.height - knight.height);
 
+      // Movement state
       const movement = {
         up: false,
         down: false,
