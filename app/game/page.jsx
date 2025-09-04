@@ -44,6 +44,12 @@ export default function Game() {
         onGround: false,
       };
 
+      // In air movement state
+      const inAirMovement = {
+        left: false,
+        right: false,
+      };
+
       // Listen for frame updates
       app.ticker.add((time) => {
         const delta = time.deltaTime;
@@ -69,9 +75,46 @@ export default function Game() {
 
         // Handle movement
         if (movement.up && movement.jump) knight.y -= 3 * delta;
-        if (movement.down) knight.y += 10 * delta;
-        if (movement.left) knight.x -= 10 * delta;
-        if (movement.right) knight.x += 10 * delta;
+        // Commented out for now, might add back later for downward attack mechanic
+        // if (movement.down) knight.y += 10 * delta;
+
+        // Handle horizontal movement
+        if (movement.onGround === false) {
+          if (movement.left) { 
+            inAirMovement.left = true; 
+          } else if (movement.right) { 
+            inAirMovement.right = true; 
+          }
+        } else {
+          if (movement.left) { 
+            knight.x -= 10 * delta; 
+          }
+          if (movement.right) { 
+            knight.x += 10 * delta; 
+          }
+        }
+
+        if (inAirMovement.left || inAirMovement.right) {
+          // If both are pressed reset horizontal movement
+          if (inAirMovement.left && inAirMovement.right) {
+            knight.x += 0;
+            inAirMovement.left = false;
+            inAirMovement.right = false;
+          } 
+
+          if (inAirMovement.left) {
+            knight.x -= 9 * delta; 
+          }
+          if (inAirMovement.right) {
+            knight.x += 9 * delta; 
+          }
+        }
+
+        // Reset in-air movement when landing
+        if (movement.onGround) {
+          inAirMovement.left = false;
+          inAirMovement.right = false;
+        }
 
         // Handle jumping
         if (movement.jump) {
