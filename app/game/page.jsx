@@ -74,11 +74,6 @@ export default function Game() {
         }
 
         // Handle movement
-        if (movement.up && movement.jump) knight.y -= 3 * delta;
-        // Commented out for now, might add back later for downward attack mechanic
-        // if (movement.down) knight.y += 10 * delta;
-
-        // Handle horizontal movement
         if (movement.onGround === false) {
           if (movement.left) { 
             inAirMovement.left = true; 
@@ -97,7 +92,6 @@ export default function Game() {
         if (inAirMovement.left || inAirMovement.right) {
           // If both are pressed reset horizontal movement
           if (inAirMovement.left && inAirMovement.right) {
-            knight.x += 0;
             inAirMovement.left = false;
             inAirMovement.right = false;
           } 
@@ -109,6 +103,9 @@ export default function Game() {
             knight.x += 9 * delta; 
           }
         }
+
+        // Commented out for now, might add back later for downward attack mechanic
+        // if (movement.down) knight.y += 10 * delta;
 
         // Reset in-air movement when landing
         if (movement.onGround) {
