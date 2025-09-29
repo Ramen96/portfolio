@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 :root {
-  --blue-color: #0000FF;
+  --blue-color: #0a0a1a;
   --white-color: #FFFFFF;
   --glitch-color-1: #FF0080;
   --glitch-color-2: #00FF80;
@@ -1149,4 +1149,128 @@
   .loadingContainer {
     display: none !important;
   }
+}
+
+
+
+
+/* Main content wrapper */
+.mainContent {
+  text-align: center;
+  padding: 0 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Section subtitle */
+.subtitle {
+  font-size: 2em;
+  color: var(--glitch-color-2);
+  margin-bottom: 20px;
+  font-family: 'VT323', monospace;
+  text-shadow: 0 0 10px var(--glitch-color-2);
+}
+
+/* Section content text */
+.content {
+  font-size: 1.4em;
+  line-height: 1.4;
+  color: var(--white-color);
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: 'VT323', monospace;
+}
+
+/* Home section buttons */
+.homeButtons {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.homeButton {
+  padding: 10px 20px;
+  border: 2px solid var(--white-color);
+  background: rgba(0, 0, 255, 0.2);
+  color: var(--white-color);
+  font-family: 'VT323', monospace;
+  font-size: 1.2em;
+  cursor: none;
+}
+
+/* Projects grid */
+.projectsGrid {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  max-width: 800px;
+  margin: 40px auto 0;
+}
+
+.projectCard {
+  padding: 20px;
+  border: 1px solid var(--white-color);
+  background: rgba(0, 0, 0, 0.5);
+  font-family: 'VT323', monospace;
+  cursor: none;
+}
+
+.projectName {
+  font-size: 1.4em;
+  color: var(--glitch-color-3);
+  margin-bottom: 10px;
+}
+
+.projectDesc {
+  color: var(--white-color);
+  font-size: 1em;
+}
+
+/* Contact section */
+.contactContainer {
+  margin-top: 40px;
+  max-width: 400px;
+  margin: 40px auto 0;
+}
+
+.contactCard {
+  padding: 20px;
+  border: 2px solid var(--white-color);
+  background: rgba(0, 0, 255, 0.1);
+  font-family: 'VT323', monospace;
+  font-size: 1.2em;
+}
+
+.contactLine {
+  margin-bottom: 15px;
+}
+
+.contactLine:last-child {
+  margin-bottom: 0;
+}
+
+.contactLabel {
+  font-family: 'VT323', monospace;
+}
+
+.contactValue {
+  color: var(--white-color);
+}
+
+/* Footer status bar */
+.statusBar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: 'VT323', monospace;
+  font-size: 1em;
+  color: var(--white-color);
 }

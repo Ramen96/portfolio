@@ -1,24 +1,28 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/page.module.css";
+import Nav from "../components/Nav/nav";
 
 export default function Home() {
-const matrixContainerRef = useRef(null);
+  const matrixContainerRef = useRef(null);
   const cursorRef = useRef(null);
-  const loadingLabelRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [currentSection, setCurrentSection] = useState('home');
+
+  // Prevent scrolling
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+    };
+  }, []);
 
   const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-  const loadingMessages = [
-    'LOADING SYSTEM...',
-    'INITIALIZING...',
-    'ERROR DETECTED...',
-    'RETRYING...',
-    'CONNECTING...',
-    'SYSTEM CORRUPTED...',
-    'RESTORING...'
-  ];
 
   // Matrix character creation
   const createMatrixChar = () => {
@@ -74,24 +78,6 @@ const matrixContainerRef = useRef(null);
     }
   };
 
-  // Random glitch effects
-  const randomizeGlitches = () => {
-    const intensity = Math.random();
-    const body = document.body;
-    
-    if (intensity > 0.95) {
-      body.style.animationDuration = '0.5s';
-      setTimeout(() => {
-        body.style.animationDuration = '3s';
-      }, 500);
-    } else if (intensity > 0.85) {
-      body.style.animationDuration = '1s';
-      setTimeout(() => {
-        body.style.animationDuration = '3s';
-      }, 1000);
-    }
-  };
-
   // Spawn random artifacts
   const spawnRandomArtifacts = () => {
     if (Math.random() > 0.8) {
@@ -115,33 +101,52 @@ const matrixContainerRef = useRef(null);
     }
   };
 
-  // Update loading message
-  const updateLoadingMessage = () => {
-    if (Math.random() > 0.7 && loadingLabelRef.current) {
-      loadingLabelRef.current.textContent = 
-        loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-    }
-  };
-
+  // Create initial matrix characters
   useEffect(() => {
-    // Create initial matrix characters
     for (let i = 0; i < 15; i++) {
       setTimeout(createMatrixChar, i * 100);
     }
     
     // Set up intervals
     const matrixInterval = setInterval(createMatrixChar, 150);
-    const glitchInterval = setInterval(randomizeGlitches, 8000);
     const artifactsInterval = setInterval(spawnRandomArtifacts, 3000);
-    const loadingInterval = setInterval(updateLoadingMessage, 2000);
 
     return () => {
       clearInterval(matrixInterval);
-      clearInterval(glitchInterval);
       clearInterval(artifactsInterval);
-      clearInterval(loadingInterval);
     };
   }, []);
+
+  const sections = {
+    home: {
+      title: "the404.page",
+      subtitle: "Welcome to the Digital Void",
+      content: "A cyberpunk corner of the internet where errors become art and glitches tell stories."
+    },
+    about: {
+      title: "About the Anomaly",
+      subtitle: "Lost in Translation",
+      content: "Born from the digital abyss, the404.page exists in the liminal space between found and lost, between error and intention. Here, bugs are features and chaos has its own order."
+    },
+    projects: {
+      title: "Digital Artifacts",
+      subtitle: "Experiments in Code",
+      content: "A collection of digital experiments, glitched creations, and cyberpunk aesthetics. Where traditional web design goes to die and something more interesting is born."
+    },
+    contact: {
+      title: "Establish Connection",
+      subtitle: "Signal in the Noise",
+      content: "Reach out through the static. Communication protocols may be unstable, but the signal always finds a way through."
+    }
+  };
+
+  const navItems = [
+    { name: 'home', href: '/' },
+    { name: 'about', href: '/about' },
+    { name: 'projects', href: '/projects' },
+    { name: 'contact', href: '/contact' },
+    { name: 'game', href: '/game' }
+  ];
 
   return (
     <div className={styles.container} onMouseMove={handleMouseMove}>
@@ -176,22 +181,93 @@ const matrixContainerRef = useRef(null);
         }}
       ></div>
       
-      {/* Text layers */}
+      {/* Navigation */}
+      <Nav 
+        currentSection={currentSection}
+        setCurrentSection={setCurrentSection}
+        navItems={navItems}
+      />
+
+      {/* Main content */}
       <div className={styles.textLayers}>
-        <h1 className={styles.mainTitle} data-text="the404.page is under construction!">
-          the404.page is under construction!
-        </h1>
+        <div className={styles.mainContent}>
+          <h1 className={styles.mainTitle} data-text={sections[currentSection].title}>
+            {sections[currentSection].title}
+          </h1>
+          
+          <div className={styles.subtitle}>
+            {sections[currentSection].subtitle}
+          </div>
+          
+          <div className={styles.content}>
+            {sections[currentSection].content}
+          </div>
+
+          {/* Section-specific content */}
+          {currentSection === 'home' && (
+            <div className={styles.homeButtons}>
+              {['ENTER', 'EXPLORE', 'EXPERIENCE'].map((text, i) => (
+                <div key={text} className={styles.homeButton} style={{
+                  animation: `text-color-shift ${2 + i * 0.3}s infinite`
+                }}>
+                  {text}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {currentSection === 'projects' && (
+            <div className={styles.projectsGrid}>
+              {[
+                { name: 'GLITCH.EXE', desc: 'Digital corruption as art form' },
+                { name: 'VOID.CSS', desc: 'Stylesheets from the abyss' },
+                { name: 'ERROR.HTML', desc: 'Beautiful broken markup' }
+              ].map(project => (
+                <div key={project.name} className={styles.projectCard}>
+                  <div className={styles.projectName}>
+                    {project.name}
+                  </div>
+                  <div className={styles.projectDesc}>
+                    {project.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {currentSection === 'contact' && (
+            <div className={styles.contactContainer}>
+              <div className={styles.contactCard}>
+                <div className={styles.contactLine}>
+                  <span className={styles.contactLabel} style={{ color: 'var(--glitch-color-1)' }}>EMAIL:</span>
+                  <span className={styles.contactValue}> contact@the404.page</span>
+                </div>
+                <div className={styles.contactLine}>
+                  <span className={styles.contactLabel} style={{ color: 'var(--glitch-color-2)' }}>SIGNAL:</span>
+                  <span className={styles.contactValue}> ENCRYPTED</span>
+                </div>
+                <div className={styles.contactLine}>
+                  <span className={styles.contactLabel} style={{ color: 'var(--glitch-color-3)' }}>STATUS:</span>
+                  <span className={styles.contactValue}> ONLINE</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Alternative glitch messages */}
         <div className={`${styles.altMessage} ${styles.altMessage1}`}>SYSTEM ERROR DETECTED</div>
         <div className={`${styles.altMessage} ${styles.altMessage2}`}>REBOOTING IN PROGRESS</div>
         <div className={`${styles.altMessage} ${styles.altMessage3}`}>CONNECTION UNSTABLE</div>
       </div>
       
-      {/* Loading bar */}
-      <div className={styles.loadingContainer}>
-        <div ref={loadingLabelRef} className={styles.loadingLabel}>LOADING SYSTEM...</div>
-        <div className={styles.loadingBar}>
-          <div className={styles.loadingProgress}></div>
-        </div>
+      {/* Footer status bar */}
+      <div className={styles.statusBar}>
+        <div>STATUS: <span style={{ color: 'var(--glitch-color-2)' }}>ONLINE</span></div>
+        <div>|</div>
+        <div>ERRORS: <span style={{ color: 'var(--glitch-color-1)' }}>404</span></div>
+        <div>|</div>
+        <div>UPTIME: <span style={{ color: 'var(--glitch-color-3)' }}>∞</span></div>
       </div>
     </div>
   );
