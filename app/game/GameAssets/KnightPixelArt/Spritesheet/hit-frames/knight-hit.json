@@ -1,0 +1,20 @@
+{"frames": {
+
+"Hero-hit-Sheet.png":
+{
+	"frame": {"x":1,"y":1,"w":19,"h":23},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":1,"w":19,"h":23},
+	"sourceSize": {"w":24,"h":24}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "knight-hit.png",
+	"format": "RGBA8888",
+	"size": {"w":21,"h":25},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:52a1d5937c953d97e6ad503db6f5cc49:bd4feb0139a12f89cf092726ded2d898:7eec37f46c4ed773147c1c1d40aaf02f$"
+}
+}

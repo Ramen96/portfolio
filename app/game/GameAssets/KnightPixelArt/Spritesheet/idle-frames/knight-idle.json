@@ -1,0 +1,31 @@
+{"frames": {
+
+"knight-idle-0.png":
+{
+	"frame": {"x":1,"y":1,"w":18,"h":22},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":18,"h":22},
+	"sourceSize": {"w":24,"h":24}
+},
+"knight-idle-1.png":
+{
+	"frame": {"x":21,"y":1,"w":18,"h":22},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":18,"h":22},
+	"sourceSize": {"w":24,"h":24}
+}},
+"animations": {
+	"knight-idle": ["knight-idle-0.png","knight-idle-1.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "knight-idle.png",
+	"format": "RGBA8888",
+	"size": {"w":40,"h":24},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:6b30214eeea4cd3cb33112c60a2aa38d:932b83681a96ac7b55524d9f718b7117:8f8c32c9d66967ce501ef4374a600e17$"
+}
+}
