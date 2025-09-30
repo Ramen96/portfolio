@@ -1,0 +1,63 @@
+{"frames": {
+
+"knight-walk-0.png":
+{
+	"frame": {"x":26,"y":1,"w":18,"h":22},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":18,"h":22},
+	"sourceSize": {"w":24,"h":24}
+},
+"knight-walk-1.png":
+{
+	"frame": {"x":44,"y":25,"w":18,"h":21},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":3,"w":18,"h":21},
+	"sourceSize": {"w":24,"h":24}
+},
+"knight-walk-2.png":
+{
+	"frame": {"x":1,"y":25,"w":20,"h":21},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":3,"w":20,"h":21},
+	"sourceSize": {"w":24,"h":24}
+},
+"knight-walk-3.png":
+{
+	"frame": {"x":1,"y":1,"w":23,"h":22},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":23,"h":22},
+	"sourceSize": {"w":24,"h":24}
+},
+"knight-walk-4.png":
+{
+	"frame": {"x":23,"y":25,"w":19,"h":21},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":3,"w":19,"h":21},
+	"sourceSize": {"w":24,"h":24}
+},
+"knight-walk-5.png":
+{
+	"frame": {"x":46,"y":1,"w":17,"h":21},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":3,"w":17,"h":21},
+	"sourceSize": {"w":24,"h":24}
+}},
+"animations": {
+	"knight-walk": ["knight-walk-0.png","knight-walk-1.png","knight-walk-2.png","knight-walk-3.png","knight-walk-4.png","knight-walk-5.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "knight-walk.png",
+	"format": "RGBA8888",
+	"size": {"w":64,"h":47},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:e4d06eeb4a726f6f66703d9617992fe1:2ce94f9d56c563e5d4665d04c1715aa0:4685977544d81c023dc37faa00e6954f$"
+}
+}
