@@ -8,6 +8,7 @@ export default function Home() {
   const cursorRef = useRef(null);
   const mousePositionRef = useRef({ x: 0, y: 0 });
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [cursorClicking, setCursorClicking] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
 
   // Prevent scrolling
@@ -64,9 +65,11 @@ export default function Home() {
     };
   }, []);
 
-  // Mouse move handler
+  // Mouse event handlers
   const handleMouseMove = (e) => {
     mousePositionRef.current = { x: e.clientX, y: e.clientY };
+    // Update cursor position immediately for clicks
+    setCursorPosition({ x: e.clientX, y: e.clientY });
 
     if (Math.random() > 0.7) {
       const trail = document.createElement('div');
@@ -109,8 +112,20 @@ export default function Home() {
 
   // Create initial matrix characters and set up intervals
   useEffect(() => {
-    // Add mousemove event listener
+    // Add mouse event listeners
     document.addEventListener('mousemove', handleMouseMove);
+    const handleMouseDown = (e) => {
+      setCursorClicking(true);
+      // Force immediate position update
+      setCursorPosition(mousePositionRef.current);
+    };
+    const handleMouseUp = (e) => {
+      setCursorClicking(false);
+      // Force immediate position update
+      setCursorPosition(mousePositionRef.current);
+    };
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mouseup', handleMouseUp);
 
     for (let i = 0; i < 15; i++) {
       setTimeout(createMatrixChar, i * 100);
@@ -121,8 +136,10 @@ export default function Home() {
     const artifactsInterval = setInterval(spawnRandomArtifacts, 3000);
 
     return () => {
-      // Cleanup mousemove event listener
+      // Cleanup mouse event listeners
       document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
       clearInterval(matrixInterval);
       clearInterval(artifactsInterval);
     };
@@ -182,16 +199,6 @@ export default function Home() {
       {/* RGB shift overlay */}
       <div className={styles.rgbShift}></div>
       
-      {/* Custom cursor */}
-      <div 
-        ref={cursorRef}
-        className={styles.glitchCursor}
-        style={{
-          left: `${cursorPosition.x}px`,
-          top: `${cursorPosition.y}px`
-        }}
-      ></div>
-      
       {/* Navigation */}
       <Nav 
         currentSection={currentSection}
@@ -243,6 +250,17 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {/* Custom cursor */}
+      <div
+        ref={cursorRef}
+        className={`${styles.glitchCursor} ${cursorClicking ? styles.glitchCursorClicking : ''}`}
+        style={{
+          left: `${cursorPosition.x}px`,
+          top: `${cursorPosition.y}px`,
+          transform: `translate(-50%, -50%) scale(${cursorClicking ? 0.8 : 1})`
+        }}
+      ></div>
     </div>
   );
 }

@@ -20,6 +20,8 @@
   color: var(--white-color);
   padding: 5px 10px;
   cursor: none;
+  position: relative;
+  z-index: 1;
   font-family: 'VT323', monospace;
   font-size: 18px;
   text-transform: uppercase;

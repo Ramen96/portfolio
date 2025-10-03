@@ -10,15 +10,28 @@ export default function Nav({ navItems }) {
     return pathname === path ? styles.navButtonActive : '';
   }
 
-  // clicks are not working
-  // check page.jsx for the / route to see if the cursor effect has something to do with this.
+  const handleNavClick = (e) => {
+    console.log('Nav click event:', {
+      target: e.target,
+      href: e.target.href,
+      eventType: e.type
+    });
+  };
+
   return (
-    <nav className={styles.nav}>
+    <nav className={styles.nav} onClick={handleNavClick}>
       {navItems.map(item => (
         <Link
           key={item.name}
           href={item.href}
           className={`${styles.navButton} ${isActive(item.href)}`}
+          onClick={(e) => {
+            console.log('Link click event:', {
+              name: item.name,
+              href: item.href,
+              eventType: e.type
+            });
+          }}
         >
           {item.name}
         </Link>
