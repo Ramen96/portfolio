@@ -6,7 +6,7 @@ import Nav from "../components/Nav/nav";
 export default function Home() {
   const matrixContainerRef = useRef(null);
   const cursorRef = useRef(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const mousePositionRef = useRef({ x: 0, y: 0 });
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [currentSection, setCurrentSection] = useState('home');
 
@@ -15,7 +15,6 @@ export default function Home() {
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
 
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = 'auto';
       document.documentElement.style.overflow = 'auto';
@@ -27,7 +26,6 @@ export default function Home() {
   // Matrix character creation
   const createMatrixChar = () => {
     if (!matrixContainerRef.current) return;
-
     const char = document.createElement('div');
     const charText = chars[Math.floor(Math.random() * chars.length)];
     char.className = styles.matrixChar;
@@ -45,23 +43,31 @@ export default function Home() {
     }, 7000);
   };
 
-  // Custom cursor tracking
+  // Custom cursor animation loop
   useEffect(() => {
+    let animationFrameId;
     const updateCursor = () => {
-      setCursorPosition(prev => ({
-        x: prev.x + (mousePosition.x - prev.x) * 0.1,
-        y: prev.y + (mousePosition.y - prev.y) * 0.1
-      }));
-      requestAnimationFrame(updateCursor);
+      setCursorPosition(prev => {
+        const { x, y } = mousePositionRef.current;
+        return {
+          x: prev.x + (x - prev.x) * 0.1,
+          y: prev.y + (y - prev.y) * 0.1
+        };
+      });
+      animationFrameId = requestAnimationFrame(updateCursor);
     };
+
     updateCursor();
-  }, [mousePosition]);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   // Mouse move handler
   const handleMouseMove = (e) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
-    
-    // Mouse trail effect
+    mousePositionRef.current = { x: e.clientX, y: e.clientY };
+
     if (Math.random() > 0.7) {
       const trail = document.createElement('div');
       trail.className = styles.cursorTrail;
@@ -101,8 +107,11 @@ export default function Home() {
     }
   };
 
-  // Create initial matrix characters
+  // Create initial matrix characters and set up intervals
   useEffect(() => {
+    // Add mousemove event listener
+    document.addEventListener('mousemove', handleMouseMove);
+
     for (let i = 0; i < 15; i++) {
       setTimeout(createMatrixChar, i * 100);
     }
@@ -112,6 +121,8 @@ export default function Home() {
     const artifactsInterval = setInterval(spawnRandomArtifacts, 3000);
 
     return () => {
+      // Cleanup mousemove event listener
+      document.removeEventListener('mousemove', handleMouseMove);
       clearInterval(matrixInterval);
       clearInterval(artifactsInterval);
     };
@@ -149,11 +160,11 @@ export default function Home() {
   ];
 
   return (
-    <div className={styles.container} onMouseMove={handleMouseMove}>
+    <div className={styles.container}>
       {/* Screen flicker overlay */}
       <div className={styles.screenFlicker}></div>
       
-      {/* Digital artifacts */}
+      {/* Digital artifacts (static) */}
       <div className={styles.digitalArtifacts}>
         <div className={styles.artifactBlock} style={{width: '20px', height: '15px', top: '10%', left: '15%'}}></div>
         <div className={styles.artifactBlock} style={{width: '15px', height: '12px', top: '30%', left: '70%'}}></div>
@@ -224,50 +235,13 @@ export default function Home() {
                 { name: 'ERROR.HTML', desc: 'Beautiful broken markup' }
               ].map(project => (
                 <div key={project.name} className={styles.projectCard}>
-                  <div className={styles.projectName}>
-                    {project.name}
-                  </div>
-                  <div className={styles.projectDesc}>
-                    {project.desc}
-                  </div>
+                    <h3>{project.name}</h3>
+                    <p>{project.desc}</p>
                 </div>
               ))}
             </div>
           )}
-
-          {currentSection === 'contact' && (
-            <div className={styles.contactContainer}>
-              <div className={styles.contactCard}>
-                <div className={styles.contactLine}>
-                  <span className={styles.contactLabel} style={{ color: 'var(--glitch-color-1)' }}>EMAIL:</span>
-                  <span className={styles.contactValue}> contact@the404.page</span>
-                </div>
-                <div className={styles.contactLine}>
-                  <span className={styles.contactLabel} style={{ color: 'var(--glitch-color-2)' }}>SIGNAL:</span>
-                  <span className={styles.contactValue}> ENCRYPTED</span>
-                </div>
-                <div className={styles.contactLine}>
-                  <span className={styles.contactLabel} style={{ color: 'var(--glitch-color-3)' }}>STATUS:</span>
-                  <span className={styles.contactValue}> ONLINE</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
-
-        {/* Alternative glitch messages */}
-        <div className={`${styles.altMessage} ${styles.altMessage1}`}>SYSTEM ERROR DETECTED</div>
-        <div className={`${styles.altMessage} ${styles.altMessage2}`}>REBOOTING IN PROGRESS</div>
-        <div className={`${styles.altMessage} ${styles.altMessage3}`}>CONNECTION UNSTABLE</div>
-      </div>
-      
-      {/* Footer status bar */}
-      <div className={styles.statusBar}>
-        <div>STATUS: <span style={{ color: 'var(--glitch-color-2)' }}>ONLINE</span></div>
-        <div>|</div>
-        <div>ERRORS: <span style={{ color: 'var(--glitch-color-1)' }}>404</span></div>
-        <div>|</div>
-        <div>UPTIME: <span style={{ color: 'var(--glitch-color-3)' }}>∞</span></div>
       </div>
     </div>
   );
