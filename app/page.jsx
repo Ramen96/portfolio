@@ -169,10 +169,10 @@ export default function Home() {
   };
 
   const navItems = [
-    { name: 'home', href: '/' },
-    { name: 'about', href: '/about' },
-    { name: 'projects', href: '/projects' },
-    { name: 'contact', href: '/contact' },
+    { name: 'home', href: '#' },
+    { name: 'about', href: '#' },
+    { name: 'projects', href: '#' },
+    { name: 'contact', href: '#' },
     { name: 'game', href: '/game' }
   ];
 
