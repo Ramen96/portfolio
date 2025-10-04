@@ -2,13 +2,20 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/page.module.css";
 import Nav from "../components/Nav/nav";
+import gsap from "gsap";
+import SplitText from "gsap/SplitText";
+import { title } from "process";
+
+gsap.registerPlugin(SplitText);
 
 export default function Home() {
   const matrixContainerRef = useRef(null);
   const cursorRef = useRef(null);
   const mousePositionRef = useRef({ x: 0, y: 0 });
+  const titleRef = useRef(null);
+  const subtitleRef = useRef(null);
+  const contentRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const [cursorClicking, setCursorClicking] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
 
   // Prevent scrolling
@@ -65,11 +72,9 @@ export default function Home() {
     };
   }, []);
 
-  // Mouse event handlers
+  // Mouse move handler
   const handleMouseMove = (e) => {
     mousePositionRef.current = { x: e.clientX, y: e.clientY };
-    // Update cursor position immediately for clicks
-    setCursorPosition({ x: e.clientX, y: e.clientY });
 
     if (Math.random() > 0.7) {
       const trail = document.createElement('div');
@@ -110,22 +115,48 @@ export default function Home() {
     }
   };
 
+  // Scramble animation
+  useEffect(() => {
+    const elements = [titleRef.current, subtitleRef.current, contentRef.current];
+    const splitTexts = elements.map(element => 
+      element ? new SplitText(element, { type: 'chars', charsClass: 'char' }) : null
+    ).filter(Boolean);
+
+    const upperAndLowerCase = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const getRandomLetter = () =>
+      upperAndLowerCase[Math.round(upperAndLowerCase.length * Math.random())];
+
+    const scramble = (char) => {
+      char.textContent = getRandomLetter();
+      char.scrambleTimeout = setTimeout(() => scramble(char), 25 + Math.random() * 50);
+    };
+
+    const unscramble = (char, delay) => {
+      setTimeout(() => {
+        clearTimeout(char.scrambleTimeout);
+        char.textContent = char.orig;
+      }, delay);
+    };
+
+    splitTexts.forEach((st) => {
+      st.chars.forEach((char) => (char.orig = char.textContent));
+      st.chars.forEach((char) => {
+        scramble(char);
+        const randomDelay = 500 + Math.random() * 1000;
+        unscramble(char, randomDelay);
+      });
+    });
+
+    return () => {
+      splitTexts.forEach(st => st.revert());
+    };
+    
+  }, [currentSection]);
+
   // Create initial matrix characters and set up intervals
   useEffect(() => {
-    // Add mouse event listeners
+    // Add mousemove event listener
     document.addEventListener('mousemove', handleMouseMove);
-    const handleMouseDown = (e) => {
-      setCursorClicking(true);
-      // Force immediate position update
-      setCursorPosition(mousePositionRef.current);
-    };
-    const handleMouseUp = (e) => {
-      setCursorClicking(false);
-      // Force immediate position update
-      setCursorPosition(mousePositionRef.current);
-    };
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mouseup', handleMouseUp);
 
     for (let i = 0; i < 15; i++) {
       setTimeout(createMatrixChar, i * 100);
@@ -136,10 +167,8 @@ export default function Home() {
     const artifactsInterval = setInterval(spawnRandomArtifacts, 3000);
 
     return () => {
-      // Cleanup mouse event listeners
+      // Cleanup mousemove event listener
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mouseup', handleMouseUp);
       clearInterval(matrixInterval);
       clearInterval(artifactsInterval);
     };
@@ -209,15 +238,15 @@ export default function Home() {
       {/* Main content */}
       <div className={styles.textLayers}>
         <div className={styles.mainContent}>
-          <h1 className={styles.mainTitle} data-text={sections[currentSection].title}>
+          <h1 ref={titleRef} className={styles.mainTitle} data-text={titleRef.current ? titleRef.current.textContent : ''}>
             {sections[currentSection].title}
           </h1>
           
-          <div className={styles.subtitle}>
+          <div ref={subtitleRef} className={styles.subtitle}>
             {sections[currentSection].subtitle}
           </div>
           
-          <div className={styles.content}>
+          <div ref={contentRef} className={styles.content}>
             {sections[currentSection].content}
           </div>
 
@@ -254,11 +283,10 @@ export default function Home() {
       {/* Custom cursor */}
       <div
         ref={cursorRef}
-        className={`${styles.glitchCursor} ${cursorClicking ? styles.glitchCursorClicking : ''}`}
+        className={styles.glitchCursor}
         style={{
           left: `${cursorPosition.x}px`,
-          top: `${cursorPosition.y}px`,
-          transform: `translate(-50%, -50%) scale(${cursorClicking ? 0.8 : 1})`
+          top: `${cursorPosition.y}px`
         }}
       ></div>
     </div>

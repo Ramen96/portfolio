@@ -551,6 +551,11 @@
 }
 
 /* Main title styling */
+@keyframes blink-underscore {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 .mainTitle {
   font-size: 5em;
   font-weight: normal;
@@ -558,6 +563,13 @@
   z-index: 31;
   animation: text-color-shift 2.2s infinite;
   margin: 0;
+  min-height: 1.2em;
+}
+
+.cursorUnderscore {
+  display: inline-block;
+  animation: blink-underscore 0.8s infinite;
+  color: var(--glitch-color-1);
 }
 
 @keyframes text-color-shift {
@@ -1196,6 +1208,7 @@
   margin-bottom: 20px;
   font-family: 'VT323', monospace;
   text-shadow: 0 0 10px var(--glitch-color-2);
+  min-height: 1.2em;
 }
 
 /* Section content text */
@@ -1206,6 +1219,7 @@
   max-width: 600px;
   margin: 0 auto;
   font-family: 'VT323', monospace;
+  min-height: 4.2em;
 }
 
 /* Home section buttons */
