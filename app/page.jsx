@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import styles from "../styles/page.module.css";
 import Nav from "../components/Nav/nav";
 import gsap from "gsap";
@@ -117,8 +117,19 @@ export default function Home() {
 
   // Scramble animation
   useEffect(() => {
+
+    if (titleRef.current) {
+      titleRef.current.textContent = sections[currentSection].title;
+    }
+    if (subtitleRef.current) {
+      subtitleRef.current.textContent = sections[currentSection].subtitle;
+    }
+    if (contentRef.current) {
+      contentRef.current.innerHTML = sections[currentSection].content;
+    }
+
     const elements = [titleRef.current, subtitleRef.current, contentRef.current];
-    const splitTexts = elements.map(element => 
+    const splitTexts = elements.map(element =>
       element ? new SplitText(element, { type: 'chars', charsClass: 'char' }) : null
     ).filter(Boolean);
 
@@ -205,6 +216,8 @@ export default function Home() {
     { name: 'game', href: '/game' }
   ];
 
+  const navProps = { navItems, currentSection, setCurrentSection };
+
   return (
     <div className={styles.container}>
       {/* Screen flicker overlay */}
@@ -229,11 +242,8 @@ export default function Home() {
       <div className={styles.rgbShift}></div>
       
       {/* Navigation */}
-      <Nav 
-        currentSection={currentSection}
-        setCurrentSection={setCurrentSection}
-        navItems={navItems}
-      />
+      <Nav {...navProps} />
+      
 
       {/* Main content */}
       <div className={styles.textLayers}>
