@@ -16,6 +16,8 @@ export default function Home() {
   const contentRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [currentSection, setCurrentSection] = useState('home');
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingLabel, setLoadingLabel] = useState('SYSTEM LOADING...');
 
   // Prevent scrolling
   useEffect(() => {
@@ -199,6 +201,34 @@ export default function Home() {
     };
   }, []);
 
+  // Loading bar animation
+  useEffect(() => {
+    const labels = [
+      'SYSTEM LOADING...',
+      'INITIALIZING...',
+      'SYSTEM CORRUPTED...',
+      'ERROR DETECTED...',
+      'REBOOTING...'
+    ];
+    let currentLabel = 0;
+    
+    const updateLoading = () => {
+      setLoadingProgress(prev => {
+        const next = prev + (Math.random() * 5);
+        if (next >= 100) {
+          currentLabel = (currentLabel + 1) % labels.length;
+          setLoadingLabel(labels[currentLabel]);
+          return 0;
+        }
+        return next;
+      });
+    };
+
+    const loadingInterval = setInterval(updateLoading, 100);
+
+    return () => clearInterval(loadingInterval);
+  }, []);
+
   const sections = {
     home: {
       title: "the404.page",
@@ -301,6 +331,17 @@ export default function Home() {
               ))}
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Loading bars */}
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingLabel}>{loadingLabel}</div>
+        <div className={styles.loadingBar}>
+          <div 
+            className={styles.loadingProgress} 
+            style={{ width: `${loadingProgress}%` }}
+          ></div>
         </div>
       </div>
 
