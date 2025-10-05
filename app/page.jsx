@@ -247,7 +247,7 @@ export default function Home() {
       {/* Main content */}
       <div className={styles.textLayers}>
         <div className={styles.mainContent}>
-          <h1 ref={titleRef} className={styles.mainTitle} data-text={titleRef.current ? titleRef.current.textContent : ''}>
+          <h1 ref={titleRef} className={styles.mainTitle} data-text={sections[currentSection].title}>
             {sections[currentSection].title}
           </h1>
           
