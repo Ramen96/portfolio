@@ -4,7 +4,6 @@ import styles from "../styles/page.module.css";
 import Nav from "../components/Nav/nav";
 import gsap from "gsap";
 import SplitText from "gsap/SplitText";
-import { title } from "process";
 
 gsap.registerPlugin(SplitText);
 
