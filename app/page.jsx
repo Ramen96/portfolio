@@ -117,20 +117,29 @@ export default function Home() {
   // Scramble animation
   useEffect(() => {
 
-    if (titleRef.current) {
-      titleRef.current.textContent = sections[currentSection].title;
-    }
-    if (subtitleRef.current) {
-      subtitleRef.current.textContent = sections[currentSection].subtitle;
-    }
-    if (contentRef.current) {
-      contentRef.current.innerHTML = sections[currentSection].content;
-    }
+    const elements = [
+      { ref: titleRef, text: sections[currentSection].title },
+      { ref: subtitleRef, text: sections[currentSection].subtitle },
+      { ref: contentRef, text: sections[currentSection].content }
+    ];
 
-    const elements = [titleRef.current, subtitleRef.current, contentRef.current];
-    const splitTexts = elements.map(element =>
-      element ? new SplitText(element, { type: 'chars', charsClass: 'char' }) : null
-    ).filter(Boolean);
+    elements.forEach(({ ref, text }) => {
+      if (ref.current) {
+        ref.current.textContent = text;
+      }
+    })
+
+    const splitTexts = elements.map(({ ref }) =>
+      ref.current
+        ?
+        new SplitText(ref.current,
+          {
+            type: 'chars',
+            charsClass:
+              'char'
+          })
+        :
+        null).filter(Boolean);
 
     const upperAndLowerCase = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
     const getRandomLetter = () =>
