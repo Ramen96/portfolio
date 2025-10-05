@@ -89,6 +89,12 @@ export default function Home() {
         }
       }, 500);
     }
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+    };
   };
 
   // Spawn random artifacts
