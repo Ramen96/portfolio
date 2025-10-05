@@ -1185,7 +1185,7 @@
 .homeButton {
   padding: 10px 20px;
   border: 2px solid var(--white-color);
-  background: rgba(0, 0, 255, 0.2);
+  background: transparent;
   color: var(--white-color);
   font-family: 'VT323', monospace;
   font-size: 1.2em;
@@ -1261,8 +1261,28 @@
   z-index: 30;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
   font-family: 'VT323', monospace;
-  font-size: 1em;
+  font-size: 1.375em;
   color: var(--white-color);
+  background: rgba(0, 0, 0, 0);
+  border: 2px solid var(--white-color);
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.errorStatus {
+  color: #ff3333;
+}
+
+.uptimeValue {
+  color: #ffa500;
+}
+
+.requestStatus {
+  color: #33ff33;
+}
+
+.cacheStatus {
+  color: #3399ff;
 }

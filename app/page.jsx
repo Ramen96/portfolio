@@ -18,6 +18,12 @@ export default function Home() {
   const [currentSection, setCurrentSection] = useState('home');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingLabel, setLoadingLabel] = useState('SYSTEM LOADING...');
+  const [statusMetrics] = useState({
+    uptime: '∞',
+    status: '404',
+    requests: '1,337',
+    cache: '86%'
+  });
 
   // Prevent scrolling
   useEffect(() => {
@@ -322,7 +328,10 @@ export default function Home() {
               {[
                 { name: 'GLITCH.EXE', desc: 'Digital corruption as art form' },
                 { name: 'VOID.CSS', desc: 'Stylesheets from the abyss' },
-                { name: 'ERROR.HTML', desc: 'Beautiful broken markup' }
+                { name: 'ERROR.HTML', desc: 'Beautiful broken markup' },
+                { name: 'CYBER.JS', desc: 'Scripts that defy logic' },
+                { name: 'NEON.PHP', desc: 'Fluorescent server-side chaos' },
+                { name: 'PIXEL.PNG', desc: 'Low-res art with high-res impact' }
               ].map(project => (
                 <div key={project.name} className={styles.projectCard}>
                     <h3>{project.name}</h3>
@@ -338,11 +347,19 @@ export default function Home() {
       <div className={styles.loadingContainer}>
         <div className={styles.loadingLabel}>{loadingLabel}</div>
         <div className={styles.loadingBar}>
-          <div 
-            className={styles.loadingProgress} 
+          <div
+            className={styles.loadingProgress}
             style={{ width: `${loadingProgress}%` }}
           ></div>
         </div>
+      </div>
+
+      {/* Status bar */}
+      <div className={styles.statusBar}>
+        <div>UPTIME: <span className={styles.uptimeValue}>{statusMetrics.uptime}</span> | </div>
+        <div>STATUS: <span className={styles.errorStatus}>{statusMetrics.status}</span> | </div>
+        <div>REQUESTS: <span className={styles.requestStatus}>{statusMetrics.requests}</span> | </div>
+        <div>CACHE: <span className={styles.cacheStatus}>{statusMetrics.cache}</span></div>
       </div>
 
       {/* Custom cursor */}
