@@ -1,6 +1,6 @@
 "use client";
 import React, { use, useEffect, useState } from "react";
-import { Application, Assets, Point, Sprite, Spritesheet, AnimatedSprite } from 'pixi.js';
+import { Application, Assets, Point, Sprite, Spritesheet, AnimatedSprite, SCALE_MODES } from 'pixi.js';
 import darkKnight from './GameAssets/DarkKnight.png';
 import knightPNG from './GameAssets/knight.png';
 import knightWalking from './GameAssets/KnightPixelArt/Spritesheet/walk-fames/knight-walk.png';
@@ -35,9 +35,16 @@ export default function Game() {
       const playerWalkAnimation = new AnimatedSprite(playerSpriteSheet.animations['knight-walk']);
       playerWalkAnimation.animationSpeed = 0.1;
       playerWalkAnimation.play();
-      playerWalkAnimation.height = 115;
-      playerWalkAnimation.width = 115;
-      playerWalkAnimation.position.set(app.screen.width / 2, app.screen.height - playerWalkAnimation.height);
+      
+      // Set the scale mode to NEAREST for pixel-perfect rendering
+      playerTextures.baseTexture.scaleMode = SCALE_MODES.NEAREST;
+      
+      // Calculate scale based on desired height
+      const desiredHeight = 115;
+      const scale = desiredHeight / playerWalkAnimation.height;
+      playerWalkAnimation.scale.set(scale);
+      
+      playerWalkAnimation.position.set(app.screen.width / 2, app.screen.height - desiredHeight);
 
       // Create the knight sprite
       const knight = new Sprite(texture);
@@ -191,7 +198,7 @@ export default function Game() {
       };
 
       // Spawn the knight
-      app.stage.addChild(knight);
+      // app.stage.addChild(knight);
       app.stage.addChild(playerWalkAnimation);
 
       // Add event listeners for keyboard input
