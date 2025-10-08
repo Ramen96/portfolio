@@ -1,8 +1,10 @@
 "use client";
 import React, { use, useEffect, useState } from "react";
-import { Application, Assets, Point, Sprite } from 'pixi.js';
+import { Application, Assets, Point, Sprite, Spritesheet, AnimatedSprite } from 'pixi.js';
 import darkKnight from './GameAssets/DarkKnight.png';
 import knightPNG from './GameAssets/knight.png';
+import knightWalking from './GameAssets/KnightPixelArt/Spritesheet/walk-fames/knight-walk.png';
+import knightWalkingJSON from './GameAssets/KnightPixelArt/Spritesheet/walk-fames/knight-walk.json';
 
 export default function Game() {
   useEffect(() => {
@@ -24,6 +26,18 @@ export default function Game() {
         console.error('Failed to load texture:', error);
         texture = await Assets.load('https://pixijs.com/assets/bunny.png');
       }
+
+      // Load player textures for animation
+      const playerTextures = await Assets.load(knightWalking.src);
+      const playerSpriteSheet = new Spritesheet(playerTextures, knightWalkingJSON);
+      await playerSpriteSheet.parse();
+
+      const playerWalkAnimation = new AnimatedSprite(playerSpriteSheet.animations['knight-walk']);
+      playerWalkAnimation.animationSpeed = 0.1;
+      playerWalkAnimation.play();
+      playerWalkAnimation.height = 115;
+      playerWalkAnimation.width = 115;
+      playerWalkAnimation.position.set(app.screen.width / 2, app.screen.height - playerWalkAnimation.height);
 
       // Create the knight sprite
       const knight = new Sprite(texture);
@@ -178,6 +192,7 @@ export default function Game() {
 
       // Spawn the knight
       app.stage.addChild(knight);
+      app.stage.addChild(playerWalkAnimation);
 
       // Add event listeners for keyboard input
       document.addEventListener('keydown', handleKeyDown);
