@@ -1,12 +1,12 @@
 {"frames": {
 
-"Hero-hit-Sheet.png":
+"knight-hit.png":
 {
-	"frame": {"x":1,"y":1,"w":19,"h":23},
+	"frame": {"x":0,"y":0,"w":21,"h":25},
 	"rotated": false,
-	"trimmed": true,
-	"spriteSourceSize": {"x":3,"y":1,"w":19,"h":23},
-	"sourceSize": {"w":24,"h":24}
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":25},
+	"sourceSize": {"w":21,"h":25}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
@@ -15,6 +15,6 @@
 	"format": "RGBA8888",
 	"size": {"w":21,"h":25},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:52a1d5937c953d97e6ad503db6f5cc49:bd4feb0139a12f89cf092726ded2d898:7eec37f46c4ed773147c1c1d40aaf02f$"
+	"smartupdate": "$TexturePacker:SmartUpdate:f0f5ec46f73ab5eb93400797d6285d58:dd21c33b3f00b9889d32a8c26936a81b:b644306b05b6f803bee5be3d5d9f4d90$"
 }
 }
