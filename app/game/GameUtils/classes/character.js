@@ -1,4 +1,4 @@
-import { AnimatedSprite, Assets, Spritesheet, Point } from 'pixi.js';
+import { AnimatedSprite, Assets, Spritesheet, Point, Sprite } from 'pixi.js';
 
 export class Character {
     constructor() {
@@ -11,37 +11,64 @@ export class Character {
 
     async loadAnimations(animationData) {
         for (const [name, data] of Object.entries(animationData)) {
-            const texture = await Assets.load(data.sprite);
+            try {
+                const texture = await Assets.load(data.sprite);
+                const spritesheet = new Spritesheet(texture, data.json);
+                await spritesheet.parse();
 
-            // Create and parse spritesheet
-            const spritesheet = new Spritesheet(texture, data.json);
-            await spritesheet.parse();
-            
-            // Create animated sprite
-            const animationData = spritesheet?.animations[data.animationKey];
-            const animation = new AnimatedSprite(animationData);
-            animation.animationSpeed = data.speed;
-            animation.visible = false;
-            
-            // Set pixel-perfect rendering
-            texture.baseTexture.scaleMode = 'nearest';
-            
-            this.animations[name] = animation;
+                let displayObject;
+
+                // Check if this is a multi-frame animation or single sprite
+                if (spritesheet.animations && spritesheet.animations[data.animationKey]) {
+                    // Multi-frame animation - use AnimatedSprite
+                    displayObject = new AnimatedSprite(spritesheet.animations[data.animationKey]);
+                    displayObject.animationSpeed = data.speed;
+                } else {
+                    // Single frame - use regular Sprite
+                    const frameKey = Object.keys(data.json.frames)[0];
+                    displayObject = new Sprite(spritesheet.textures[frameKey]);
+                }
+
+                // Common properties for both Sprite and AnimatedSprite
+                displayObject.visible = false;
+                texture.baseTexture.scaleMode = 'nearest';
+                
+                this.animations[name] = displayObject;
+                
+                console.log(`Loaded ${name} as ${displayObject instanceof AnimatedSprite ? 'AnimatedSprite' : 'Sprite'}`);
+
+            } catch (error) {
+                console.error(`Failed to load animation "${name}":`, error);
+                continue;
+            }
         }
 
-        // Set initial animation
-        this.playAnimation('idle');
+        // Set initial animation if available
+        if (this.animations.idle) {
+            this.playAnimation('idle');
+        }
     }
 
     playAnimation(animationName) {
         if (this.currentAnimation) {
             this.currentAnimation.visible = false;
-            this.currentAnimation.stop();
+            // Only stop if it's an AnimatedSprite
+            if (this.currentAnimation instanceof AnimatedSprite) {
+                this.currentAnimation.stop();
+            }
         }
 
         this.currentAnimation = this.animations[animationName];
+        if (!this.currentAnimation) {
+            console.warn(`Animation "${animationName}" not found`);
+            return;
+        }
+
         this.currentAnimation.visible = true;
-        this.currentAnimation.play();
+        // Only play if it's an AnimatedSprite
+        if (this.currentAnimation instanceof AnimatedSprite) {
+            this.currentAnimation.play();
+        }
     }
 
     setPosition(x, y) {
@@ -56,7 +83,6 @@ export class Character {
         }
     }
 
-    // Flip character based on direction
     setDirection(direction) {
         if (this.facing !== direction) {
             this.facing = direction;
