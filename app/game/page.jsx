@@ -1,10 +1,8 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
-import { Application, Assets, Point, Sprite, Spritesheet, AnimatedSprite, SCALE_MODES } from 'pixi.js';
-import darkKnight from './GameAssets/DarkKnight.png';
-import knightPNG from './GameAssets/knight.png';
-import knightWalking from './GameAssets/KnightPixelArt/Spritesheet/walk-fames/knight-walk.png';
-import knightWalkingJSON from './GameAssets/KnightPixelArt/Spritesheet/walk-fames/knight-walk.json';
+import { useEffect } from "react";
+import { Application, Point } from 'pixi.js';
+import { Character } from "./GameUtils/classes/character";
+import { knightAnimations } from "./GameUtils/Animations/playerKnight";
 
 export default function Game() {
   useEffect(() => {
@@ -18,41 +16,24 @@ export default function Game() {
       // Append the application canvas to the document body
       document.body.appendChild(app.canvas);
 
-      // Load the texture
-      let texture;
-      try {
-        texture = await Assets.load(knightPNG.src);
-      } catch (error) {
-        console.error('Failed to load texture:', error);
-        texture = await Assets.load('https://pixijs.com/assets/bunny.png');
-      }
+      // Create the player sprite
+      const knight = new Character();
 
-      // Load player textures for animation
-      const playerTextures = await Assets.load(knightWalking.src);
-      const playerSpriteSheet = new Spritesheet(playerTextures, knightWalkingJSON);
-      await playerSpriteSheet.parse();
+      await knight.loadAnimations(knightAnimations);
 
-      const playerWalkAnimation = new AnimatedSprite(playerSpriteSheet.animations['knight-walk']);
-      playerWalkAnimation.animationSpeed = 0.1;
-      playerWalkAnimation.play();
-      
-      // Set the scale mode to NEAREST for pixel-perfect rendering
-      playerTextures.baseTexture.scaleMode = SCALE_MODES.NEAREST;
-      
-      // Calculate scale based on desired height
-      const desiredHeight = 115;
-      const scale = desiredHeight / playerWalkAnimation.height;
-      playerWalkAnimation.scale.set(scale);
-      
-      playerWalkAnimation.position.set(app.screen.width / 2, app.screen.height - desiredHeight);
+      const knightHeight = 100;
+      const scale = knightHeight / knight.animations.idle.height;
+      knight.setScale(scale);
 
-      // Create the knight sprite
-      const knight = new Sprite(texture);
-      knight.height = 115;
-      knight.width = 115;
-      knight.velocity = new Point(0);
-      knight.mass = 3;
-      knight.position.set(app.screen.width / 2, app.screen.height - knight.height);
+      knight.setPosition(
+        app.screen.width / 2, 
+        app.screen.height - knightHeight
+      );
+
+      // Spawn the player
+      Object.values(knight.animations).forEach(animation => {
+        app.stage.addChild(animation);
+      });
 
       // Movement state
       const movement = {
@@ -196,10 +177,6 @@ export default function Game() {
             break;
         }
       };
-
-      // Spawn the knight
-      // app.stage.addChild(knight);
-      app.stage.addChild(playerWalkAnimation);
 
       // Add event listeners for keyboard input
       document.addEventListener('keydown', handleKeyDown);
