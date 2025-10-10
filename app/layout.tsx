@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio",
-  description: "My personal portfolio website",
+  title: "the404.page",
+  description: "...a 404 page.",
 };
 
 export default function RootLayout({
