@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { Application, Point } from 'pixi.js';
 import { Character } from "./GameUtils/classes/character";
+import { Player } from "./GameUtils/classes/player";
 import { knightAnimations } from "./GameUtils/Animations/playerKnight";
 
 export default function Game() {
@@ -17,18 +18,20 @@ export default function Game() {
       document.body.appendChild(app.canvas);
 
       // Create the player sprite
-      const knight = new Character();
+      const knight = new Player();
 
-      await knight.loadAnimations(knightAnimations);
+      const screenWidth = app.screen.width;
+      const screenHeight = app.screen.height;
+      await knight.loadAnimations(knightAnimations, screenWidth, screenHeight);
 
-      const knightHeight = 100;
-      const scale = knightHeight / knight.animations.idle.height;
-      knight.setScale(scale);
+      // const knightHeight = 100;
+      // const scale = knightHeight / knight.currentAnimation.height;
+      // knight.setScale(scale);
 
-      knight.setPosition(
-        app.screen.width / 2, 
-        app.screen.height - knightHeight
-      );
+      // knight.setPosition(
+      //   app.screen.width / 2, 
+      //   app.screen.height - knightHeight
+      // );
 
       // Spawn the player
       Object.values(knight.animations).forEach(animation => {
@@ -57,39 +60,54 @@ export default function Game() {
         const delta = time.deltaTime;
 
         // Apply gravity
-        const gravity = new Point(0, 0.98);
-        knight.velocity.x += gravity.x * delta;
-        knight.velocity.y += gravity.y * delta;
-        knight.x += knight.velocity.x * delta;
-        knight.y += knight.velocity.y * delta;
+        // const gravity = new Point(0, 0.98);
+        // knight.velocity.x += gravity.x * delta;
+        // knight.velocity.y += gravity.y * delta;
+        // knight.x += knight.velocity.x * delta;
+        // knight.y += knight.velocity.y * delta;
 
-        // Prevent knight from going out of bounds and set onGround status
-        if (knight.y < 0 || knight.y > app.screen.height - knight.height) {
-          knight.y = Math.max(0, Math.min(knight.y, app.screen.height - knight.height));
-          movement.onGround = true;
-          movement.canDoubleJump = true;
-          knight.velocity.y = 0;
-        }
+        // // Prevent knight from going out of bounds and set onGround status
+        // if (knight.y < 0 || knight.y > app.screen.height - knight.height) {
+        //   knight.y = Math.max(0, Math.min(knight.y, app.screen.height - knight.height));
+        //   movement.onGround = true;
+        //   movement.canDoubleJump = true;
+        //   knight.velocity.y = 0;
+        // }
 
-        if (knight.x < 0 || knight.x > app.screen.width - knight.width) {
-          knight.x = Math.max(0, Math.min(knight.x, app.screen.width - knight.width));
-        }
+        // if (knight.x < 0 || knight.x > app.screen.width - knight.width) {
+        //   knight.x = Math.max(0, Math.min(knight.x, app.screen.width - knight.width));
+        // }
+
+        // test movement handling
+        knight.handleMovement(delta, app.screen.height);
+
+        // handleInput(delta);
+        // const handleKeyDown = (event) => {
+        //   return knight.handleInput(event.key, true);
+        // }
+        // const handleKeyUp = (event) => {
+        //   return knight.handleInput(event.key, false);
+        // }
+
+        // document.addEventListener('keydown', handleKeyDown, { once: true });
+        // document.addEventListener('keyup', handleKeyUp, { once: true });
 
         // Handle movement
-        if (movement.onGround === false) {
-          if (movement.left) { 
-            inAirMovement.left = true; 
-          } else if (movement.right) { 
-            inAirMovement.right = true; 
-          }
-        } else {
-          if (movement.left) { 
-            knight.x -= 10 * delta; 
-          }
-          if (movement.right) { 
-            knight.x += 10 * delta; 
-          }
-        }
+        knight.handleInput
+        // if (movement.onGround === false) {
+        //   if (movement.left) { 
+        //     inAirMovement.left = true; 
+        //   } else if (movement.right) { 
+        //     inAirMovement.right = true; 
+        //   }
+        // } else {
+        //   if (movement.left) { 
+        //     knight.x -= 10 * delta; 
+        //   }
+        //   if (movement.right) { 
+        //     knight.x += 10 * delta; 
+        //   }
+        // }
 
         if (inAirMovement.left || inAirMovement.right) {
           // If both are pressed reset horizontal movement
@@ -129,58 +147,58 @@ export default function Game() {
       
       });
 
-      // Handle keyboard input
-      const handleKeyDown = (event) => {
-        switch (event.key) {
-          case 'w':
-          case 'ArrowUp':
-            movement.up = true;
-            break;
-          case 's':
-          case 'ArrowDown':
-            movement.down = true;
-            break;
-          case 'a':
-          case 'ArrowLeft':
-            movement.left = true;
-            break;
-          case 'd':
-          case 'ArrowRight':
-            movement.right = true;
-            break;
-          case ' ':
-            movement.jump = true;
-            break;
-        }
-      };
+      // // Handle keyboard input
+      // const handleKeyDown = (event) => {
+      //   switch (event.key) {
+      //     case 'w':
+      //     case 'ArrowUp':
+      //       movement.up = true;
+      //       break;
+      //     case 's':
+      //     case 'ArrowDown':
+      //       movement.down = true;
+      //       break;
+      //     case 'a':
+      //     case 'ArrowLeft':
+      //       movement.left = true;
+      //       break;
+      //     case 'd':
+      //     case 'ArrowRight':
+      //       movement.right = true;
+      //       break;
+      //     case ' ':
+      //       movement.jump = true;
+      //       break;
+      //   }
+      // };
 
-      const handleKeyUp = (event) => {
-        switch (event.key) {
-          case 'w':
-          case 'ArrowUp':
-            movement.up = false;
-            break;
-          case 's':
-          case 'ArrowDown':
-            movement.down = false;
-            break;
-          case 'a':
-          case 'ArrowLeft':
-            movement.left = false;
-            break;
-          case 'd':
-          case 'ArrowRight':
-            movement.right = false;
-            break;
-          case ' ':
-            movement.jump = false;
-            break;
-        }
-      };
+      // const handleKeyUp = (event) => {
+      //   switch (event.key) {
+      //     case 'w':
+      //     case 'ArrowUp':
+      //       movement.up = false;
+      //       break;
+      //     case 's':
+      //     case 'ArrowDown':
+      //       movement.down = false;
+      //       break;
+      //     case 'a':
+      //     case 'ArrowLeft':
+      //       movement.left = false;
+      //       break;
+      //     case 'd':
+      //     case 'ArrowRight':
+      //       movement.right = false;
+      //       break;
+      //     case ' ':
+      //       movement.jump = false;
+      //       break;
+      //   }
+      // };
 
       // Add event listeners for keyboard input
-      document.addEventListener('keydown', handleKeyDown);
-      document.addEventListener('keyup', handleKeyUp);
+      // document.addEventListener('keydown', handleKeyDown);
+      // document.addEventListener('keyup', handleKeyUp);
 
       // Clean up event listeners when component unmounts
       return () => {

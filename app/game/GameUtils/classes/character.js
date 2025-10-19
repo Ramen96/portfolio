@@ -22,9 +22,13 @@ export class Character {
       left: false,
       right: false,
     };
+
+    this.characterDimensions = {
+      height: 100,
+    }
   }
 
-  async loadAnimations(animationData) {
+  async loadAnimations(animationData, screenWidth, screenHeight) {
     for (const [name, data] of Object.entries(animationData)) {
       try {
         const texture = await Assets.load(data.sprite);
@@ -52,6 +56,10 @@ export class Character {
 
         console.log(`Loaded ${name} as ${displayObject instanceof AnimatedSprite ? 'AnimatedSprite' : 'Sprite'}`);
 
+        this.updateCharacterScale();
+        this.setInitialPosition(screenWidth, screenHeight);
+        this.checkBoundaries(screenWidth, screenHeight);
+
       } catch (error) {
         console.error(`Failed to load animation "${name}":`, error);
         continue;
@@ -61,6 +69,32 @@ export class Character {
     // Set initial animation if available
     if (this.animations.idle) {
       this.playAnimation('idle');
+    }
+  }
+
+  updateCharacterScale() {
+    const characterHeight = this.characterDimensions.height;
+    const scale = characterHeight / this.currentAnimation?.height || 1;
+    this.setScale(scale);
+  }
+
+  setInitialPosition(screenWidth, screenHeight) {
+    this.setPosition(
+      screenWidth / 2,
+      screenHeight - this.characterDimensions.height
+    );
+  }
+
+  checkBoundaries(screenWidth, screenHeight) {
+    if (this.y < 0 || this.y > screenHeight - this.height) {
+      this.y = Math.max(0, Math.min(this.y, screenHeight - this.height));
+      this.movement.onGround = true;
+      this.movement.canDoubleJump = true;
+      this.velocity.y = 0;
+    }
+
+    if (this.x < 0 || this.x > screenWidth - this.width) {
+      this.x = Math.max(0, Math.min(this.x, screenWidth - this.width));
     }
   }
 
@@ -108,15 +142,10 @@ export class Character {
   }
 
   handleMovement(delta, bounds) {
-    // Apply gravity
-    const gravity = new Point(0, 0.98);
-    this.velocity.x += gravity.x * delta;
-    this.velocity.y += gravity.y * delta;
-    this.currentAnimation.x += this.velocity.x * delta;
-    this.currentAnimation.y += this.velocity.y * delta;
+    
 
     // Handle boundries and ground status
-    if (this.y < bounds.top || this.y > bounds.bottom - this.height) {
+    if (this.y < 0 || this.y > bounds.bottom - this.height) {
       this.currentAnimation.y = Math.max(bounds.top, Math.min(this.y, bounds.bottom - this.height));
       this.movement.onGround = true;
       this.movement.canDoubleJump = true;
