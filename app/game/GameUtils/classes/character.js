@@ -4,7 +4,8 @@ export class Character {
   constructor() {
     this.animations = {};
     this.currentAnimation = null;
-    this.velocity = new Point(0);
+    this.velocity = new Point(0, 0);
+    this.gravity = new Point(0, 0);
     this.mass = 3;
     this.facing = 'right';
 
@@ -66,8 +67,6 @@ export class Character {
     if (this.animations.idle) {
       this.playAnimation('idle');
       this.updateCharacterScale();
-      this.setInitialPosition(screenWidth, screenHeight);
-      this.checkBoundaries(screenWidth, screenHeight);
     }
   }
 
@@ -79,35 +78,6 @@ export class Character {
     }
   }
 
-  setInitialPosition(screenWidth, screenHeight) {
-    if (this.currentAnimation) {
-      const actualHeight = this.currentAnimation.height * this.currentAnimation.scale.y;
-      this.setPosition(
-        screenWidth / 2,
-        screenHeight - actualHeight / 2
-      );
-    }
-  }
-
-  setGravityEffect(gravity, delta) {
-    this.velocity.x += gravity.x * this.mass * delta;
-    this.velocity.y += gravity.y * this.mass * delta;
-    this.x += this.velocity.x * delta;
-    this.y += this.velocity.y * delta;
-  }
-
-  checkBoundaries(screenWidth, screenHeight) {
-    if (this.y < 0 || this.y > screenHeight - this.height) {
-      this.y = Math.max(0, Math.min(this.y, screenHeight - this.height));
-      this.movement.onGround = true;
-      this.movement.canDoubleJump = true;
-      this.velocity.y = 0;
-    }
-
-    if (this.x < 0 || this.x > screenWidth - this.width) {
-      this.x = Math.max(0, Math.min(this.x, screenWidth - this.width));
-    }
-  }
 
   playAnimation(animationName) {
     if (this.currentAnimation) {
@@ -153,21 +123,7 @@ export class Character {
   }
 
   handleMovement(delta, bounds) {
-    
 
-    // Handle boundaries and ground status
-    if (this.y < 0 || this.y > bounds.bottom - this.height) {
-      this.currentAnimation.y = Math.max(bounds.top, Math.min(this.y, bounds.bottom - this.height));
-      this.movement.onGround = true;
-      this.movement.canDoubleJump = true;
-      this.velocity.y = 0;
-    }
-
-    if (this.x < bounds.left || this.x > bounds.right - this.width) {
-      this.currentAnimation.x = Math.max(bounds.left, Math.min(this.x, bounds.right - this.width));
-    }
-
-    this.updatePosition(delta);
   }
 
   updatePosition(delta) {
