@@ -39,26 +39,27 @@ export default function Game() {
       });
 
       // Movement state
-      const movement = {
-        up: false,
-        down: false,
-        left: false,
-        right: false,
-        jump: false,
-        canDoubleJump: true,
-        onGround: false,
-      };
+      // const movement = {
+      //   up: false,
+      //   down: false,
+      //   left: false,
+      //   right: false,
+      //   jump: false,
+      //   canDoubleJump: true,
+      //   onGround: false,
+      // };
 
       // In air movement state
-      const inAirMovement = {
-        left: false,
-        right: false,
-      };
+      // const inAirMovement = {
+      //   left: false,
+      //   right: false,
+      // };
 
       // Listen for frame updates
       app.ticker.add((time) => {
         const delta = time.deltaTime;
 
+      knight.setGravityEffect(new Point(0, 0.98), app.ticker.deltaTime / 60);
         // Apply gravity
         // const gravity = new Point(0, 0.98);
         // knight.velocity.x += gravity.x * delta;
@@ -109,41 +110,41 @@ export default function Game() {
         //   }
         // }
 
-        if (inAirMovement.left || inAirMovement.right) {
-          // If both are pressed reset horizontal movement
-          if (inAirMovement.left && inAirMovement.right) {
-            inAirMovement.left = false;
-            inAirMovement.right = false;
-          } 
+        // if (inAirMovement.left || inAirMovement.right) {
+        //   // If both are pressed reset horizontal movement
+        //   if (inAirMovement.left && inAirMovement.right) {
+        //     inAirMovement.left = false;
+        //     inAirMovement.right = false;
+        //   } 
 
-          if (inAirMovement.left) {
-            knight.x -= 9 * delta; 
-          }
-          if (inAirMovement.right) {
-            knight.x += 9 * delta; 
-          }
-        }
+        //   if (inAirMovement.left) {
+        //     knight.x -= 9 * delta; 
+        //   }
+        //   if (inAirMovement.right) {
+        //     knight.x += 9 * delta; 
+        //   }
+        // }
 
         // Commented out for now, might add back later for downward attack mechanic
         // if (movement.down) knight.y += 10 * delta;
 
         // Reset in-air movement when landing
-        if (movement.onGround) {
-          inAirMovement.left = false;
-          inAirMovement.right = false;
-        }
+        // if (movement.onGround) {
+        //   inAirMovement.left = false;
+        //   inAirMovement.right = false;
+        // }
 
         // Handle jumping
-        if (movement.jump) {
-          if (movement.onGround) {
-            knight.velocity.y = -20; 
-            movement.onGround = false;
-          } else if (movement.canDoubleJump) {
-            knight.velocity.y = -15; 
-            movement.canDoubleJump = false; 
-          }
-          movement.jump = false;   
-        }
+        // if (movement.jump) {
+        //   if (movement.onGround) {
+        //     knight.velocity.y = -20; 
+        //     movement.onGround = false;
+        //   } else if (movement.canDoubleJump) {
+        //     knight.velocity.y = -15; 
+        //     movement.canDoubleJump = false; 
+        //   }
+        //   movement.jump = false;   
+        // }
       
       });
 
