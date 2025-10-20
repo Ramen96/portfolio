@@ -34,23 +34,6 @@ export default function Game() {
         app.stage.addChild(animation);
       });
 
-      // Movement state
-      // const movement = {
-      //   up: false,
-      //   down: false,
-      //   left: false,
-      //   right: false,
-      //   jump: false,
-      //   canDoubleJump: true,
-      //   onGround: false,
-      // };
-
-      // In air movement state
-      // const inAirMovement = {
-      //   left: false,
-      //   right: false,
-      // };
-
       // Listen for frame updates
       app.ticker.add((time) => {
         const delta = time.deltaTime;
