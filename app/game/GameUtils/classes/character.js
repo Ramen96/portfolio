@@ -56,10 +56,6 @@ export class Character {
 
         console.log(`Loaded ${name} as ${displayObject instanceof AnimatedSprite ? 'AnimatedSprite' : 'Sprite'}`);
 
-        this.updateCharacterScale();
-        this.setInitialPosition(screenWidth, screenHeight);
-        this.checkBoundaries(screenWidth, screenHeight);
-
       } catch (error) {
         console.error(`Failed to load animation "${name}":`, error);
         continue;
@@ -69,20 +65,35 @@ export class Character {
     // Set initial animation if available
     if (this.animations.idle) {
       this.playAnimation('idle');
+      this.updateCharacterScale();
+      this.setInitialPosition(screenWidth, screenHeight);
+      this.checkBoundaries(screenWidth, screenHeight);
     }
   }
 
   updateCharacterScale() {
-    const characterHeight = this.characterDimensions.height;
-    const scale = characterHeight / this.currentAnimation?.height || 1;
-    this.setScale(scale);
+    if (this.currentAnimation) {
+      const desiredHeight = this.characterDimensions.height;
+      const scale = desiredHeight / this.currentAnimation.height;
+      this.currentAnimation.scale.set(scale);
+    }
   }
 
   setInitialPosition(screenWidth, screenHeight) {
-    this.setPosition(
-      screenWidth / 2,
-      screenHeight - this.characterDimensions.height
-    );
+    if (this.currentAnimation) {
+      const actualHeight = this.currentAnimation.height * this.currentAnimation.scale.y;
+      this.setPosition(
+        screenWidth / 2,
+        screenHeight - actualHeight / 2
+      );
+    }
+  }
+
+  setGravityEffect(gravity, delta) {
+    this.velocity.x += gravity.x * this.mass * delta;
+    this.velocity.y += gravity.y * this.mass * delta;
+    this.x += this.velocity.x * delta;
+    this.y += this.velocity.y * delta;
   }
 
   checkBoundaries(screenWidth, screenHeight) {
@@ -144,7 +155,7 @@ export class Character {
   handleMovement(delta, bounds) {
     
 
-    // Handle boundries and ground status
+    // Handle boundaries and ground status
     if (this.y < 0 || this.y > bounds.bottom - this.height) {
       this.currentAnimation.y = Math.max(bounds.top, Math.min(this.y, bounds.bottom - this.height));
       this.movement.onGround = true;
@@ -163,8 +174,3 @@ export class Character {
 
   }
 }
-
-
-
-
-
