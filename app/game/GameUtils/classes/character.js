@@ -73,8 +73,8 @@ export class Character {
 
   updateCharacterScale() {
     if (this.currentAnimation) {
-      const desiredHeight = this.characterDimensions.height;
-      const scale = desiredHeight / this.currentAnimation.height;
+      const characterHeight = this.characterDimensions.height;
+      const scale = characterHeight / this.currentAnimation.height;
       this.currentAnimation.scale.set(scale);
     }
   }
