@@ -59,7 +59,7 @@ export default function Game() {
       app.ticker.add((time) => {
         const delta = time.deltaTime;
 
-      knight.setGravityEffect(new Point(0, 0.98), app.ticker.deltaTime / 60);
+      knight.setGravityEffect(new Point(0, 0.98), delta);
         // Apply gravity
         // const gravity = new Point(0, 0.98);
         // knight.velocity.x += gravity.x * delta;
