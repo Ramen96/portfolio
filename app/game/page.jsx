@@ -24,14 +24,10 @@ export default function Game() {
       const screenHeight = app.screen.height;
       await knight.loadAnimations(knightAnimations, screenWidth, screenHeight);
 
-      // const knightHeight = 100;
-      // const scale = knightHeight / knight.currentAnimation.height;
-      // knight.setScale(scale);
-
-      // knight.setPosition(
-      //   app.screen.width / 2, 
-      //   app.screen.height - knightHeight
-      // );
+      knight.setPosition( // need to figure out a way to do this for all characters upon game start
+        app.screen.width / 2, 
+        app.screen.height - knight.characterDimensions.height
+      );
 
       // Spawn the player
       Object.values(knight.animations).forEach(animation => {
@@ -59,25 +55,24 @@ export default function Game() {
       app.ticker.add((time) => {
         const delta = time.deltaTime;
 
-      knight.setGravityEffect(new Point(0, 0.98), delta);
         // Apply gravity
-        // const gravity = new Point(0, 0.98);
-        // knight.velocity.x += gravity.x * delta;
-        // knight.velocity.y += gravity.y * delta;
-        // knight.x += knight.velocity.x * delta;
-        // knight.y += knight.velocity.y * delta;
+        const gravity = new Point(0, 0.98);
+        knight.velocity.x += gravity.x * delta;
+        knight.velocity.y += gravity.y * delta;
+        knight.x += knight.velocity.x * delta;
+        knight.y += knight.velocity.y * delta;
 
         // // Prevent knight from going out of bounds and set onGround status
-        // if (knight.y < 0 || knight.y > app.screen.height - knight.height) {
-        //   knight.y = Math.max(0, Math.min(knight.y, app.screen.height - knight.height));
-        //   movement.onGround = true;
-        //   movement.canDoubleJump = true;
-        //   knight.velocity.y = 0;
-        // }
+        if (knight.y < 0 || knight.y > app.screen.height - knight.height) {
+          knight.y = Math.max(0, Math.min(knight.y, app.screen.height - knight.height));
+          movement.onGround = true;
+          movement.canDoubleJump = true;
+          knight.velocity.y = 0;
+        }
 
-        // if (knight.x < 0 || knight.x > app.screen.width - knight.width) {
-        //   knight.x = Math.max(0, Math.min(knight.x, app.screen.width - knight.width));
-        // }
+        if (knight.x < 0 || knight.x > app.screen.width - knight.width) {
+          knight.x = Math.max(0, Math.min(knight.x, app.screen.width - knight.width));
+        }
 
         // test movement handling
         knight.handleMovement(delta, app.screen.height);

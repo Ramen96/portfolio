@@ -5,7 +5,6 @@ export class Character {
     this.animations = {};
     this.currentAnimation = null;
     this.velocity = new Point(0, 0);
-    this.gravity = new Point(0, 0);
     this.mass = 3;
     this.facing = 'right';
 
