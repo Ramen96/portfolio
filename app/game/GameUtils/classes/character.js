@@ -28,7 +28,7 @@ export class Character {
     }
   }
 
-  async loadAnimations(animationData, screenWidth, screenHeight) {
+  async loadAnimations(animationData) {
     for (const [name, data] of Object.entries(animationData)) {
       try {
         const texture = await Assets.load(data.sprite);
