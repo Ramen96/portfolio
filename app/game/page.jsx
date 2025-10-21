@@ -1,190 +1,77 @@
 "use client";
 import { useEffect } from "react";
-import { Application, Point } from 'pixi.js';
-import { Character } from "./GameUtils/classes/character";
-import { Player } from "./GameUtils/classes/player";
-import { knightAnimations } from "./GameUtils/Animations/playerKnight";
+import { Application } from 'pixi.js';
+import { Player } from "./GameUtils/classes/player.js"; 
+import { InputManager } from "./GameUtils/classes/inputManager.js";
+import { PhysicsEngine } from "./GameUtils/classes/physicsEngine.js";
+import { knightAnimations } from "./GameUtils/Animations/playerKnight.js";
 
 export default function Game() {
   useEffect(() => {
+    let app, knight, inputManager, physicsEngine;
+
     (async () => {
-      // Create a new application
-      const app = new Application();
-
-      // Initialize the application
+      // Application setup
+      app = new Application();
       await app.init({ background: '#1099bb', resizeTo: window });
-
-      // Append the application canvas to the document body
       document.body.appendChild(app.canvas);
 
-      // Create the player sprite
-      const knight = new Player();
+      // input setup
+      inputManager = new InputManager();
+      inputManager.startListening();
 
-      const screenWidth = app.screen.width;
-      const screenHeight = app.screen.height;
-      await knight.loadAnimations(knightAnimations, screenWidth, screenHeight);
+      // character setup
+      knight = new Player();
+      await knight.loadAnimations(knightAnimations);
+      
+      const groundY = app.screen.height - knight.characterDimensions.height;
+      
+      // Set the internal position property and update sprite positions
+      knight.setPosition(app.screen.width / 2, groundY); 
+      knight.x = app.screen.width / 2;
+      knight.y = groundY; 
 
-      knight.setPosition( // need to figure out a way to do this for all characters upon game start
-        app.screen.width / 2, 
-        app.screen.height - knight.characterDimensions.height
+      // physics engine setup
+      // Pass app.screen.width directly to the PhysicsEngine
+      physicsEngine = new PhysicsEngine(
+        knight, 
+        app.screen.height,
+        app.screen.width 
       );
 
-      // Spawn the player
+      // Link InputManager to the Player's movement properties
+      const updateMovementState = (keys) => {
+          Object.assign(knight.movement, keys);
+      };
+      inputManager.subscribe(updateMovementState);
+      
+      // stage setup: Add the player's animated sprites to the stage
       Object.values(knight.animations).forEach(animation => {
         app.stage.addChild(animation);
       });
-
-      // Listen for frame updates
-      app.ticker.add((time) => {
-        const delta = time.deltaTime;
-
-        // Apply gravity
-        const gravity = new Point(0, 0.98);
-        knight.velocity.x += gravity.x * delta;
-        knight.velocity.y += gravity.y * delta;
-        knight.x += knight.velocity.x * delta;
-        knight.y += knight.velocity.y * delta;
-
-        // // Prevent knight from going out of bounds and set onGround status
-        if (knight.y < 0 || knight.y > app.screen.height - knight.height) {
-          knight.y = Math.max(0, Math.min(knight.y, app.screen.height - knight.height));
-          movement.onGround = true;
-          movement.canDoubleJump = true;
-          knight.velocity.y = 0;
-        }
-
-        if (knight.x < 0 || knight.x > app.screen.width - knight.width) {
-          knight.x = Math.max(0, Math.min(knight.x, app.screen.width - knight.width));
-        }
-
-        // test movement handling
-        knight.handleMovement(delta, app.screen.height);
-
-        // handleInput(delta);
-        // const handleKeyDown = (event) => {
-        //   return knight.handleInput(event.key, true);
-        // }
-        // const handleKeyUp = (event) => {
-        //   return knight.handleInput(event.key, false);
-        // }
-
-        // document.addEventListener('keydown', handleKeyDown, { once: true });
-        // document.addEventListener('keyup', handleKeyUp, { once: true });
-
-        // Handle movement
-        knight.handleInput
-        // if (movement.onGround === false) {
-        //   if (movement.left) { 
-        //     inAirMovement.left = true; 
-        //   } else if (movement.right) { 
-        //     inAirMovement.right = true; 
-        //   }
-        // } else {
-        //   if (movement.left) { 
-        //     knight.x -= 10 * delta; 
-        //   }
-        //   if (movement.right) { 
-        //     knight.x += 10 * delta; 
-        //   }
-        // }
-
-        // if (inAirMovement.left || inAirMovement.right) {
-        //   // If both are pressed reset horizontal movement
-        //   if (inAirMovement.left && inAirMovement.right) {
-        //     inAirMovement.left = false;
-        //     inAirMovement.right = false;
-        //   } 
-
-        //   if (inAirMovement.left) {
-        //     knight.x -= 9 * delta; 
-        //   }
-        //   if (inAirMovement.right) {
-        //     knight.x += 9 * delta; 
-        //   }
-        // }
-
-        // Commented out for now, might add back later for downward attack mechanic
-        // if (movement.down) knight.y += 10 * delta;
-
-        // Reset in-air movement when landing
-        // if (movement.onGround) {
-        //   inAirMovement.left = false;
-        //   inAirMovement.right = false;
-        // }
-
-        // Handle jumping
-        // if (movement.jump) {
-        //   if (movement.onGround) {
-        //     knight.velocity.y = -20; 
-        //     movement.onGround = false;
-        //   } else if (movement.canDoubleJump) {
-        //     knight.velocity.y = -15; 
-        //     movement.canDoubleJump = false; 
-        //   }
-        //   movement.jump = false;   
-        // }
       
+      // main game loop 
+      app.ticker.add((time) => {
+        // Normalize delta time for consistent physics, regardless of frame rate
+        const delta = time.deltaTime / 60; 
+
+        // Update Physics Engine
+        physicsEngine.update(delta);
       });
 
-      // // Handle keyboard input
-      // const handleKeyDown = (event) => {
-      //   switch (event.key) {
-      //     case 'w':
-      //     case 'ArrowUp':
-      //       movement.up = true;
-      //       break;
-      //     case 's':
-      //     case 'ArrowDown':
-      //       movement.down = true;
-      //       break;
-      //     case 'a':
-      //     case 'ArrowLeft':
-      //       movement.left = true;
-      //       break;
-      //     case 'd':
-      //     case 'ArrowRight':
-      //       movement.right = true;
-      //       break;
-      //     case ' ':
-      //       movement.jump = true;
-      //       break;
-      //   }
-      // };
-
-      // const handleKeyUp = (event) => {
-      //   switch (event.key) {
-      //     case 'w':
-      //     case 'ArrowUp':
-      //       movement.up = false;
-      //       break;
-      //     case 's':
-      //     case 'ArrowDown':
-      //       movement.down = false;
-      //       break;
-      //     case 'a':
-      //     case 'ArrowLeft':
-      //       movement.left = false;
-      //       break;
-      //     case 'd':
-      //     case 'ArrowRight':
-      //       movement.right = false;
-      //       break;
-      //     case ' ':
-      //       movement.jump = false;
-      //       break;
-      //   }
-      // };
-
-      // Add event listeners for keyboard input
-      // document.addEventListener('keydown', handleKeyDown);
-      // document.addEventListener('keyup', handleKeyUp);
-
-      // Clean up event listeners when component unmounts
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown, { once: true });
-        document.removeEventListener('keyup', handleKeyUp, { once: true });
-        app.destroy();
-      };
     })();
-  });
+
+    // clean up function
+    return () => {
+      if (inputManager) {
+          inputManager.stopListening();
+          // Remove subscription here if necessary, though it usually cleans up when objects are destroyed
+      }
+      if (app) {
+          app.destroy();
+      }
+    };
+  }, []);
+  
+  return null;
 }

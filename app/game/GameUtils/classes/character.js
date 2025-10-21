@@ -2,6 +2,8 @@ import { AnimatedSprite, Assets, Spritesheet, Point, Sprite } from 'pixi.js';
 
 export class Character {
   constructor() {
+    this.x = 0;
+    this.y = 0;
     this.animations = {};
     this.currentAnimation = null;
     this.velocity = new Point(0, 0);
@@ -66,6 +68,15 @@ export class Character {
     if (this.animations.idle) {
       this.playAnimation('idle');
       this.updateCharacterScale();
+    }
+  }
+
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+
+    for (const animation of Object.values(this.animations)) {
+      animation.position.set(x, y);
     }
   }
 
