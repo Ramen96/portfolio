@@ -90,24 +90,17 @@ export class Character {
 
 
   playAnimation(animationName) {
-    if (this.currentAnimation) {
-      this.currentAnimation.visible = false;
-      // Only stop if it's an AnimatedSprite
-      if (this.currentAnimation instanceof AnimatedSprite) {
-        this.currentAnimation.stop();
+    if (!this.currentAnimation) { // No current animation, so just set it
+      this.currentAnimation = this.animations[animationName]; 
+      if (this.currentAnimation) { // Check if the animation exists
+        this.currentAnimation.visible = true;
+        if (this.currentAnimation instanceof AnimatedSprite || this.currentAnimation instanceof Sprite) {
+          this.currentAnimation.play();
+        }
+      } else {
+        console.warn(`Animation "${animationName}" not found`);
       }
-    }
-
-    this.currentAnimation = this.animations[animationName];
-    if (!this.currentAnimation) {
-      console.warn(`Animation "${animationName}" not found`);
       return;
-    }
-
-    this.currentAnimation.visible = true;
-    // Only play if it's an AnimatedSprite
-    if (this.currentAnimation instanceof AnimatedSprite) {
-      this.currentAnimation.play();
     }
   }
 
