@@ -41,9 +41,11 @@ export class PhysicsEngine {
         
         if (movement.left) {
             this.character.velocity.x = -this.moveSpeed;
-            this.character.setDirection('left');
+            // FIX: Set direction immediately when the key is down
+            this.character.setDirection('left'); 
         } else if (movement.right) {
             this.character.velocity.x = this.moveSpeed;
+            // FIX: Set direction immediately when the key is down
             this.character.setDirection('right');
         } else if (this.character.movement.onGround) {
             // Apply friction/deceleration when on the ground and no key is pressed
@@ -99,7 +101,6 @@ export class PhysicsEngine {
         }
         
         // Horizontal Boundaries (Walls)
-        // FIXED: Use the stored screenWidth instead of navigating the PIXI hierarchy
         const screenWidth = this.screenWidth; 
         
         if (char.x < 0) {
@@ -114,11 +115,15 @@ export class PhysicsEngine {
     // Handles setting the appropriate animation based on current state
     updateCharacterVisuals() {
         const char = this.character;
+        // If the character is moving horizontally (velocity magnitude is greater than a small threshold)
+        const isMovingHorizontally = Math.abs(char.velocity.x) > 0.1;
 
         if (char.movement.onGround) {
-            if (char.movement.left || char.movement.right) {
+            // If the character is moving (even if friction is slowing them down)
+            if (isMovingHorizontally) {
                 char.playAnimation('run');
             } else {
+                // Not moving, so idle
                 char.playAnimation('idle');
             }
         } else {
