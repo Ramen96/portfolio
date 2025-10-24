@@ -26,13 +26,10 @@ export default function Game() {
       
       const groundY = app.screen.height - knight.characterDimensions.height;
       
-      // Set the internal position property and update sprite positions
+      // Set spawn position
       knight.setPosition(app.screen.width / 2, groundY); 
-      knight.x = app.screen.width / 2;
-      knight.y = groundY; 
 
       // physics engine setup
-      // Pass app.screen.width directly to the PhysicsEngine
       physicsEngine = new PhysicsEngine(
         knight, 
         app.screen.height,
@@ -52,8 +49,7 @@ export default function Game() {
       
       // main game loop 
       app.ticker.add((time) => {
-        // Normalize delta time for consistent physics, regardless of frame rate
-        const delta = time.deltaTime / 60; 
+        const delta = time.deltaTime;
 
         // Update Physics Engine
         physicsEngine.update(delta);
@@ -65,10 +61,9 @@ export default function Game() {
     return () => {
       if (inputManager) {
           inputManager.stopListening();
-          // Remove subscription here if necessary, though it usually cleans up when objects are destroyed
       }
       if (app) {
-          app.destroy();
+        app.destroy(true, { children: true });
       }
     };
   }, []);
