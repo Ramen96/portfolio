@@ -1,16 +1,16 @@
-const GRAVITY = 0.98;
-const GROUND_FRICTION = 0.85;
-const AIR_DRAG = 0.98;
-const MAX_FALL_SPEED = 20;
+const GRAVITY = 3.92; 
+const GROUND_FRICTION = 0.75; 
+const AIR_DRAG = 0.95; 
+const MAX_FALL_SPEED = 30; 
 
 export class PhysicsEngine {
     constructor(character, screenHeight, screenWidth) { 
         this.character = character;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
-        this.moveSpeed = 8;
-        this.jumpPower = 20;
-        this.doubleJumpPower = 15;
+        this.moveSpeed = 12;
+        this.jumpPower = 40;
+        this.doubleJumpPower = 40;
     }
 
     update(delta) {
