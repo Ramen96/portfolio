@@ -48,6 +48,7 @@ export default function Game() {
       });
       
       // main game loop 
+      app.ticker.maxFPS = 120;
       app.ticker.add((time) => {
         const delta = time.deltaTime;
 
