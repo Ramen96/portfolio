@@ -6,13 +6,16 @@ export class InputManager {
             's': 'down', 'S': 'down', 'ArrowDown': 'down',
             'a': 'left', 'A': 'left', 'ArrowLeft': 'left',
             'd': 'right', 'D': 'right', 'ArrowRight': 'right',
-            ' ': 'jump'
+            ' ': 'jump',
+            'Mouse0': 'attack'
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.handleGamepadConnected = this.handleGamepadConnected.bind(this);
         this.handleGamepadDisconnected = this.handleGamepadDisconnected.bind(this);
+        this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.handleMouseUp = this.handleMouseUp.bind(this);
 
         this.movementListeners = [];
         this.gamepadIndex = null;
@@ -59,6 +62,26 @@ export class InputManager {
             this.gamepadIndex = null;
             // Clear any active gamepad inputs
             this.clearGamepadInputs();
+        }
+    }
+
+    handleMouseDown(event) {
+        if (event.button === 0) { // Left mouse button
+            const action = 'attack';
+            if (this.keys[action] !== true) {
+                this.keys[action] = true;
+                this.notifyListeners();
+            }
+        }
+    }
+
+    handleMouseUp(event) {
+        if (event.button === 0) {
+            const action = 'attack';
+            if (this.keys[action] !== false) {
+                this.keys[action] = false;
+                this.notifyListeners();
+            }
         }
     }
 
@@ -111,6 +134,11 @@ export class InputManager {
         // Jump buttons: A button (0) or B button (1)
         const jumpPressed = gamepad.buttons[0]?.pressed || gamepad.buttons[1]?.pressed || false;
 
+        const attackPressed = gamepad.buttons[2]?.pressed ||
+            gamepad.buttons[3]?.pressed ||
+            gamepad.buttons[5]?.pressed ||
+            gamepad.buttons[7]?.pressed || false;
+
         // Update keys only if changed
         if (this.keys.left !== newLeft) {
             this.keys.left = newLeft;
@@ -127,6 +155,25 @@ export class InputManager {
         if (this.keys.down !== newDown) {
             this.keys.down = newDown;
             stateChanged = true;
+        }
+
+
+        // Handle attack with button press/release detection
+        const wasAttackPressed = this.gamepadButtonStates.attack || false;
+        this.gamepadButtonStates.attack = attackPressed;
+
+        // Trigger attack on button press (not hold)
+        if (attackPressed && !wasAttackPressed) {
+            this.keys.attack = true;
+            stateChanged = true;
+        } 
+        else if (!attackPressed && this.keys.attack) {
+            this.keys.attack = false;
+            stateChanged = true;
+        }
+
+        if (stateChanged) {
+            this.notifyListeners();
         }
 
         // Handle jump with button press/release detection
@@ -156,6 +203,10 @@ export class InputManager {
         window.addEventListener('gamepadconnected', this.handleGamepadConnected);
         window.addEventListener('gamepaddisconnected', this.handleGamepadDisconnected);
 
+        // Mouse events
+        document.addEventListener('mousedown', this.handleMouseDown);
+        document.addEventListener('mouseup', this.handleMouseUp);
+
         // Check for already connected gamepads
         const gamepads = navigator.getGamepads();
         for (let i = 0; i < gamepads.length; i++) {
@@ -182,6 +233,10 @@ export class InputManager {
         // Keyboard events
         document.removeEventListener('keydown', this.handleKeyDown);
         document.removeEventListener('keyup', this.handleKeyUp);
+
+        // Mouse events
+        document.removeEventListener('mousedown', this.handleMouseDown);
+        document.removeEventListener('mouseup', this.handleMouseUp);
 
         // Gamepad events
         window.removeEventListener('gamepadconnected', this.handleGamepadConnected);

@@ -16,9 +16,15 @@ export class Character {
       left: false,
       right: false,
       jump: false,
+      attack: false,
       canDoubleJump: true,
       onGround: false,
     };
+
+    // Attack state management
+    this.isAttacking = false;
+    this.attackCooldown = 0;
+    this.attackCooldownTime = 500; // ms between attacks
 
     this.inAirMovement = {
       left: false,
@@ -28,6 +34,48 @@ export class Character {
     this.characterDimensions = {
       height: 100,
       width: 80
+    }
+  }
+
+  updateAttack(delta) {
+    // Update cooldown timer
+    if (this.attackCooldown > 0) {
+      this.attackCooldown -= delta * 1000; // Convert delta to ms
+    }
+
+    // Check if attack input is pressed and we can attack
+    if (this.movement.attack) {
+      if (!this.isAttacking && this.attackCooldown <= 0) {
+        this.performAttack();
+      }
+      // Always reset attack flag after checking
+      this.movement.attack = false;
+    }
+  }
+
+  performAttack() {
+    this.isAttacking = true;
+    this.attackCooldown = this.attackCooldownTime;
+    this.playAnimation('attack');
+
+    // You can override this in Player or Enemy classes for specific behavior
+    this.onAttackStart();
+  }
+
+  // Hook for subclasses to override
+  onAttackStart() {
+    // Override in Player or Enemy for specific attack logic
+  }
+
+  // Call this when attack animation completes
+  onAttackComplete() {
+    this.isAttacking = false;
+    // Return to appropriate idle/walk/jump animation
+    if (this.movement.onGround) {
+      const isMoving = Math.abs(this.velocity.x) > 0.1;
+      this.playAnimation(isMoving ? 'walk' : 'idle');
+    } else {
+      this.playAnimation('jump');
     }
   }
 
@@ -91,32 +139,49 @@ export class Character {
       return;
     }
 
-    if (this.currentAnimation === this.animations[animationName]) {
+    // Special handling for attack - always allow replaying
+    const isAttackReplay = (animationName === 'attack' && this.currentAnimation === this.animations[animationName]);
+
+    if (this.currentAnimation === this.animations[animationName] && !isAttackReplay) {
       return;
     }
 
     // Stop and hide previous animation
-    if (this.currentAnimation) {
+    if (this.currentAnimation && !isAttackReplay) {
       if (this.currentAnimation instanceof AnimatedSprite) {
         this.currentAnimation.stop();
+        this.currentAnimation.onComplete = null; // Clear old listeners
       }
       this.currentAnimation.visible = false;
     }
 
-    // Start new animation
-    this.currentAnimation = this.animations[animationName];
-    this.checkCharacterScale();
-    this.currentAnimation.visible = true;
+    // Start new animation (or restart if attack replay)
+    if (!isAttackReplay) {
+      this.currentAnimation = this.animations[animationName];
+      this.checkCharacterScale();
+      this.currentAnimation.visible = true;
+    }
 
     if (this.currentAnimation instanceof AnimatedSprite) {
-      this.currentAnimation.play();
+      // Set up completion handler for attack animation
+      if (animationName === 'attack') {
+        this.currentAnimation.loop = false;
+        this.currentAnimation.gotoAndPlay(0); // Reset to first frame
+        this.currentAnimation.onComplete = () => {
+          this.onAttackComplete();
+        };
+      } else {
+        this.currentAnimation.loop = true;
+        this.currentAnimation.onComplete = null;
+        this.currentAnimation.play();
+      }
     }
   }
 
   setPosition(x, y) {
     this.x = x;
     this.y = y;
-    
+
     for (const animation of Object.values(this.animations)) {
       animation.position.set(x, y);
     }

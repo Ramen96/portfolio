@@ -4,50 +4,61 @@ export class Enemy extends Character {
   constructor() {
     super();
     this.target = null;
-    this.detectionRange = 200; 
+    this.detectionRange = 200;
+    this.attackRange = 80; // How close enemy needs to be to attack
+    this.isEnemy = true; // Flag to identify enemies
   }
 
   setTarget(target) {
     this.target = target;
   }
 
-  updatePosition(delta) {
+  updateAI(delta) {
     if (!this.target) return;
 
-    // Example AI behavior
     const distanceToTarget = Math.abs(this.x - this.target.x);
 
+    // Reset movement flags
+    this.movement.left = false;
+    this.movement.right = false;
+
     if (distanceToTarget < this.detectionRange) {
-      // Move towards target
-      if (this.x < this.target.x) {
-        this.movement.right = true;
-        this.movement.left = false;
+      // Check if in attack range
+      if (distanceToTarget < this.attackRange) {
+        // Stop moving and attack
+        this.movement.attack = true;
       } else {
-        this.movement.left = true;
-        this.movement.right = false;
+        // Move towards target
+        if (this.x < this.target.x) {
+          this.movement.right = true;
+        } else {
+          this.movement.left = true;
+        }
       }
 
-      // Simple jump logic
-      if (this.movement.onGround && this.target.y < this.y) {
+      // Simple jump logic - jump if target is above
+      if (this.movement.onGround && this.target.y < this.y - 50) {
         this.movement.jump = true;
       }
     }
+  }
 
-    // Use the same movement physics as the player
-    if (this.movement.left) {
-      this.x -= 10 * delta;
-    }
-    if (this.movement.right) {
-      this.x += 10 * delta;
-    }
-
-    // Handle jumping
-    if (this.movement.jump) {
-      if (this.movement.onGround) {
-        this.velocity.y = -20;
-        this.movement.onGround = false;
+  onAttackStart() {
+    // Enemy-specific attack behavior
+    console.log("Enemy attacks!");
+    
+    // Check if player is still in range and facing them
+    if (this.target) {
+      const distanceToTarget = Math.abs(this.x - this.target.x);
+      const facingTarget = 
+        (this.facing === 'right' && this.target.x > this.x) ||
+        (this.facing === 'left' && this.target.x < this.x);
+      
+      if (distanceToTarget < this.attackRange && facingTarget) {
+        // Deal damage to player
+        // this.target.takeDamage(10);
+        console.log("Hit player!");
       }
-      this.movement.jump = false;
     }
   }
 }

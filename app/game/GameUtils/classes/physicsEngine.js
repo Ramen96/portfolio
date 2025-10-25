@@ -14,6 +14,7 @@ export class PhysicsEngine {
     }
 
     update(delta) {
+        this.character.updateAttack(delta);
         this.applyGravity(delta);
         this.handleHorizontalMovement(delta);
         this.handleJumping();
@@ -114,6 +115,12 @@ export class PhysicsEngine {
 
     updateCharacterVisuals() {
         const char = this.character;
+
+        // Don't change animation if attacking
+        if (char.isAttacking) {
+            return;
+        }
+
         const isMovingHorizontally = Math.abs(char.velocity.x) > 0.1;
 
         if (char.movement.onGround) {
@@ -126,6 +133,7 @@ export class PhysicsEngine {
             // In air
             if (char.velocity.y < 0) {
                 char.playAnimation('jump');
+                if (char?.isPlayer) console.log("THis is a player");
             }
         }
     }

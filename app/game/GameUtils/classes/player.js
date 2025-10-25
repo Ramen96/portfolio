@@ -3,7 +3,11 @@ import { Character } from "./character";
 export class Player extends Character {
     constructor() {
         super();
-        // Player-specific initialization, if any
+        this.isPlayer = true; // Flag for physics engine to identify player
+    }
+
+    onAttackStart() {
+        return;
     }
     
     // NOTE: We moved the input parsing (key to action) into InputManager.
