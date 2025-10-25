@@ -70,11 +70,18 @@ export class Character {
   updateCharacterScale() {
     if (this.currentAnimation) {
       const characterHeight = this.characterDimensions.height;
-      const scale = characterHeight / this.currentAnimation.height;
-      this.currentAnimation.scale.set(scale);
-      
-      // Update width based on actual scaled sprite dimensions
-      this.characterDimensions.width = this.currentAnimation.width * Math.abs(scale);
+      const characterWidth = characterHeight * (this.currentAnimation.width / this.currentAnimation.height); // calculate width based on aspect ratio
+      this.currentAnimation.setSize(characterWidth, characterHeight);
+    }
+  }
+
+  checkCharacterScale() {
+    if (this.currentAnimation) {
+      const characterHeight = this.characterDimensions.height;
+      const expectedScale = characterHeight / this.currentAnimation.height;
+      if (this.currentAnimation.scale.x !== expectedScale) {
+        this.updateCharacterScale();
+      }
     }
   }
 
@@ -98,13 +105,12 @@ export class Character {
 
     // Start new animation
     this.currentAnimation = this.animations[animationName];
+    this.checkCharacterScale();
     this.currentAnimation.visible = true;
 
     if (this.currentAnimation instanceof AnimatedSprite) {
       this.currentAnimation.play();
     }
-
-    this.updateCharacterScale();
   }
 
   setPosition(x, y) {
@@ -123,19 +129,6 @@ export class Character {
   }
 
   setDirection(direction) {
-    // if (this.x > 0 && direction === 'left' || this.x < 0 && direction === 'right') {
-    //   this.direction = !direction; 
-    // }
-
-    // this doesn't seem to be working as intended but committing for now to save progress
-    switch (direction) {
-      case this.velocity.x > 0 && direction === 'left':
-      case this.velocity.x < 0 && direction === 'right':
-        this.direction = !direction;
-        break;
-      default:
-        break;
-    }
     if (this.facing !== direction) {
       this.facing = direction;
       for (const animation of Object.values(this.animations)) {
