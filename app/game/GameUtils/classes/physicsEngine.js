@@ -1,5 +1,3 @@
-import { Point } from 'pixi.js';
-
 const GRAVITY = 0.98;
 const GROUND_FRICTION = 0.85;
 const AIR_DRAG = 0.98;
@@ -34,9 +32,6 @@ export class PhysicsEngine {
         }
     }
 
-    // need to add check for left/right movement input on the ground vs in air
-    // this is causing left/right movement to swap directions unexpectedly, such that when the player
-    // is back on the ground after a jump, left/right inputs are inverted
     handleHorizontalMovement(delta) { 
         const movement = this.character.movement;
         
@@ -130,9 +125,7 @@ export class PhysicsEngine {
         } else {
             // In air
             if (char.velocity.y < 0) {
-                char.playAnimation('jump'); // Going up
-            } else {
-                char.playAnimation('fall'); // Going down
+                char.playAnimation('jump');
             }
         }
     }
