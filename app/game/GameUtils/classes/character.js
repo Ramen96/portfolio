@@ -97,7 +97,8 @@ export class Character {
         }
 
         displayObject.visible = false;
-        texture.baseTexture.scaleMode = 'nearest';
+        // texture.baseTexture.scaleMode = 'nearest';
+        texture.source.scaleMode = 'nearest';
 
         this.animations[name] = displayObject;
 
