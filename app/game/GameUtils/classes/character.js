@@ -133,6 +133,19 @@ export class Character {
     }
   }
 
+  stopAnimation() {
+    if (!this.currentAnimation) return false;
+
+    if (this.currentAnimation instanceof AnimatedSprite) {
+      this.currentAnimation.stop();
+      this.currentAnimation.onComplete = null;
+    }
+
+    this.currentAnimation.visible = false;
+    this.currentAnimation = null;
+    return true;
+  }
+
   playAnimation(animationName) {
     if (!this.animations[animationName]) {
       console.warn(`Animation "${animationName}" not found`);

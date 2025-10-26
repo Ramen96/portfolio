@@ -35,6 +35,14 @@ export class PhysicsEngine {
 
     handleHorizontalMovement(delta) { 
         const movement = this.character.movement;
+
+        if (this.character.isAttacking && movement.onGround) {
+            // No horizontal movement during attack on ground
+            if (movement.left) this.character.setDirection('left');
+            if (movement.right) this.character.setDirection('right');
+            this.character.velocity.x = 0;
+            return;
+        }
         
         if (movement.left) {
             this.character.velocity.x = -this.moveSpeed;
@@ -91,6 +99,7 @@ export class PhysicsEngine {
             if (!char.movement.onGround) {
                 char.movement.onGround = true;
                 char.movement.canDoubleJump = true;
+                if (char.stopAnimation()) char.playAnimation('idle');
             }
         } else {
             // In the air
@@ -115,26 +124,26 @@ export class PhysicsEngine {
 
     updateCharacterVisuals() {
         const char = this.character;
+        const isMovingHorizontally = Math.abs(char.velocity.x) > 0.1;
+        const isInAir = !char.movement.onGround;
 
-        // Don't change animation if attacking
+        // Allow jump animation to interrupt attack
+        if (char.isAttacking && isInAir) {
+            if (char.stopAnimation()) char.playAnimation('jump');
+            char.isAttacking = false;
+            return;
+        }
+        
+        // Don't change animation if attacking on ground
         if (char.isAttacking) {
             return;
         }
 
-        const isMovingHorizontally = Math.abs(char.velocity.x) > 0.1;
-
         if (char.movement.onGround) {
-            if (isMovingHorizontally) {
-                char.playAnimation('walk');
-            } else {
-                char.playAnimation('idle');
-            }
-        } else {
-            // In air
-            if (char.velocity.y < 0) {
-                char.playAnimation('jump');
-                if (char?.isPlayer) console.log("THis is a player");
-            }
+            isMovingHorizontally ? char.playAnimation('walk') : char.playAnimation('idle');
+        } 
+        else if (char.velocity.y < 0) {
+            char.playAnimation('jump');
         }
     }
 }
