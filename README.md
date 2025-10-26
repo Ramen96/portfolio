@@ -55,7 +55,16 @@ An interactive 2D side-scrolling platformer built with pixijs, demonstrating gam
 - **Specifications:** CGA palette, 24x24px - 48x24px animations
 - **Includes:** Idle, Walk, Jump, Attack, Damage, Die animations
 
-*Grateful acknowledgment to Adriano Veríssimo for sharing these professional-quality sprites with the development community.*
+**Trapmoor - 8bit Platformer Tileset** by **Anders Gullmarsvik**
+- **Source:** [Trapmoor on itch.io](https://itchabop.itch.io/trapmoor-an-8bit-platformer-tileset)
+- **License:** Free for personal and commercial use, no redistribution
+- **Includes:**
+  - Animated sprites (Plant, Coins, Lantern, Skeleton, Spore-emitter, Sludge)
+  - Static sprites (Barrel, Chest, Vase)
+  - UI elements (Crystal ball, Lifebar)
+  - Complete tileset for platformer environments
+
+*Grateful acknowledgment to both Adriano Veríssimo and Anders Gullmarsvik for their contributions to the game development community.*
 
 ---
 
