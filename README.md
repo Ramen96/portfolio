@@ -49,18 +49,19 @@ An interactive 2D side-scrolling platformer built with pixijs, demonstrating gam
 
 ### Art Credits
 
-**Knight Sprite Pack** by **Adriano Veríssimo**
-- **Source:** [Knight Pixel Art on itch.io](https://adrverissimo.itch.io/knight-pixel-art)
-- **License:** Personal and commercial use permitted
-- **Specifications:** CGA palette, 24x24px - 48x24px animations
-- **Includes:** Idle, Walk, Jump, Attack, Damage, Die animations
+**Pixel Art Platformer Tileset**
+- Created by Senari Rey
+- Licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+- Source: https://senari-rey.itch.io/pixel-art-platformer-tileset
+- Includes: Tileset, Player Sprites, Enemy Sprites, Platforms, and Miscellaneous Items
 
-*Grateful acknowledgment to Adriano Veríssimo for their contribution to the game development community.*
+**Moonstone Keeper Assets**
+- Created by Sucart
+- Source: https://sucart.itch.io/moonstone-keeper
 
 ---
 
 ## Installation & Development
-
 ```bash
 # Clone the repository
 git clone [https://github.com/Ramen96/portfolio.git]
