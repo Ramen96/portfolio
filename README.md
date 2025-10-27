@@ -59,6 +59,31 @@ An interactive 2D side-scrolling platformer built with pixijs, demonstrating gam
 - Created by Sucart
 - Source: https://sucart.itch.io/moonstone-keeper
 
+**Shadowmyst Chronicles: Pillars of Enchantment**
+- Created by Blood Seller
+- Source: https://blood-seller.itch.io/shadowmyst-chronicles-pillars-of-enchantment
+- Includes: Magical Pillar, Dungeon Door, Magical Cube, Portal Sprite Sheets, and Platformer Tilemap
+
+**Monster Pack I**
+- Created by Penusbmic
+- Source: https://penusbmic.itch.io/monster-pack-i
+- Includes: Trash Monster, Tooth Walker, and additional monster sprites
+
+**Dark Fantasy Monster Pack 1**
+- Created by zneeke
+- Source: https://zneeke.itch.io/dark-fantasy-monster-pack-1
+- Includes: Three creeper monsters with various animations
+
+**Dark Fantasy Big Boss 1**
+- Created by zneeke
+- Source: https://zneeke.itch.io/dark-fantasy-big-boss-1
+- Includes: Three creeper boss monsters with various animations
+
+**Dark Fantasy Monster Pack 2**
+- Created by zneeke
+- Source: https://zneeke.itch.io/dark-fantasy-monster-pack-2
+- Includes: Three monsters with various animations and bonus tiny creeper
+
 ---
 
 ## Installation & Development
