@@ -54,6 +54,6 @@ export const playerAnimations = {
     sprite: playerWalk.src,
     json: playerWalkJSON,
     animationKey: 'walk',
-    speed: 0.1
+    speed: 0.3
   },
 };  
