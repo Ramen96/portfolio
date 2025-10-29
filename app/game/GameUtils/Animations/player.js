@@ -14,10 +14,10 @@ import playerWalk from '../../GameAssets/player/walk/walk.png';
 import playerWalkJSON from '../../GameAssets/player/walk/walk.json';
 
 export const playerAnimations = {
-  attackDefault: {
+  attack: {
     sprite: playerAttackDefault.src,
     json: playerAttackDefaultJSON,
-    animationKey: 'attack-default',
+    animationKey: 'attack',
     speed: 0.2
   },
   attackDown: {
