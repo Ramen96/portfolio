@@ -1,20 +1,60 @@
 "use client";
 import { useEffect } from "react";
-import { Application } from 'pixi.js';
+import { Application, Graphics } from 'pixi.js';
 import { Player } from "./GameUtils/classes/player.js"; 
 import { InputManager } from "./GameUtils/classes/inputManager.js";
 import { PhysicsEngine } from "./GameUtils/classes/physicsEngine.js";
 import { playerAnimations } from "./GameUtils/Animations/player.js";
+import LevelGenerator from "./GameUtils/levelGenerator.js";
 
 export default function Game() {
   useEffect(() => {
-    let app, player, inputManager, physicsEngine;
+    let app, player, inputManager, physicsEngine, levelGraphics;
+    const TILE_SIZE = 32;
 
     (async () => {
       // Application setup
       app = new Application();
       await app.init({ background: '#1099bb', resizeTo: window });
       document.body.appendChild(app.canvas);
+
+      // level generation
+      const levelWidth = Math.ceil(app.screen.width / TILE_SIZE);
+      const levelHeight = Math.ceil(app.screen.height / TILE_SIZE);
+      const levelGenerator = new LevelGenerator(levelWidth, levelHeight);
+      const levelGrid = levelGenerator.generateCave();
+
+      levelGraphics = new Graphics();
+      app.stage.addChild(levelGraphics);
+
+      // Draw the level
+      levelGraphics.beginFill(0x654321); 
+      for (let y = 0; y < levelHeight; y++) {
+        for (let x = 0; x < levelWidth; x++) {
+          if (levelGrid[y][x] === 1) {
+            levelGraphics.drawRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+          }
+        }
+      }
+      levelGraphics.endFill();
+
+      // find spawn position
+      let spawnX = app.screen.width / 2;
+      let spawnY = 0;
+      const spawnGridX = Math.floor(spawnX / TILE_SIZE);
+
+      // Search for a valid spawn point (empty space with solid ground below)
+      for (let y = 0; y < levelHeight - 1; y++) {  // Stop one row before the end
+        if (levelGrid[y][spawnGridX] === 0 && levelGrid[y + 1][spawnGridX] === 1) {
+          spawnY = y * TILE_SIZE;
+          break;
+        }
+      }
+
+      // If no valid spawn point found, use a default position
+      if (spawnY === 0) {
+        spawnY = TILE_SIZE * 2; // Place a bit below the top of the screen
+      }
 
       // input setup
       inputManager = new InputManager();
@@ -24,16 +64,16 @@ export default function Game() {
       player = new Player();
       await player.loadAnimations(playerAnimations);
       
-      const groundY = app.screen.height - player.characterDimensions.height;
-      
       // Set spawn position
-      player.setPosition(app.screen.width / 2, groundY); 
+      player.setPosition(spawnX, spawnY); 
 
       // physics engine setup
       physicsEngine = new PhysicsEngine(
         player, 
         app.screen.height,
-        app.screen.width 
+        app.screen.width,
+        levelGrid,
+        TILE_SIZE
       );
 
       // Link InputManager to the Player's movement properties
