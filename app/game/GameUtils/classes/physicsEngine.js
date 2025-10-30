@@ -4,13 +4,15 @@ const AIR_DRAG = 0.95;
 const MAX_FALL_SPEED = 30; 
 
 export class PhysicsEngine {
-    constructor(character, screenHeight, screenWidth) { 
+    constructor(character, screenHeight, screenWidth, levelGrid = null, tileSize = 32) { 
         this.character = character;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
         this.moveSpeed = 12;
         this.jumpPower = 40;
         this.doubleJumpPower = 40;
+        this.levelGrid = levelGrid;
+        this.tileSize = tileSize;
     }
 
     update(delta) {
