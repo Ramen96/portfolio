@@ -1,0 +1,73 @@
+{
+  "frames": {
+    "brown-brick-1": {
+      "frame": { "x": 64, "y": 192, "w": 128, "h": 128 }
+    },
+    "brown-brick-2": {
+      "frame": { "x": 192, "y": 192, "w": 128, "h": 128 }
+    },
+    "gray-brick-1": {
+      "frame": { "x": 64, "y": 319, "w": 128, "h": 128 }
+    },
+    "gray-brick-2": {
+      "frame": { "x": 192, "y": 319, "w": 128, "h": 128 }
+    },
+    "gray-brick-3": {
+      "frame": { "x": 64, "y": 448, "w": 128, "h": 128 }
+    },
+    "gray-brick-4": {
+      "frame": { "x": 192, "y": 448, "w": 128, "h": 128 }
+    },
+    "dirt-1": {
+      "frame": { "x": 384, "y": 192, "w": 128, "h": 128 }
+    },
+    "dirt-2": {
+      "frame": { "x": 448, "y": 192, "w": 128, "h": 128 }
+    },
+    "ground-1": {
+      "frame": { "x": 384, "y": 384, "w": 128, "h": 128 }
+    },
+    "ground-2": {
+      "frame": { "x": 448, "y": 384, "w": 128, "h": 128 }
+    },
+    "ladder": {
+      "frame": { "x": 80, "y": 64, "w": 28, "h": 64 }
+    },
+    "rail": {
+      "frame": { "x": 128, "y": 100, "w": 64, "h": 28 }
+    },
+    "sign-bottom-left": {
+      "frame": { "x": 204, "y": 84, "w": 40, "h": 44  }
+    },
+    "sign-left": {
+      "frame": { "x": 264, "y": 84, "w": 40, "h": 44  }
+    },
+    "sign-top-left": {
+      "frame": { "x": 324, "y": 84, "w": 40, "h": 44 }
+    },
+    "sign-top-right": {
+      "frame": { "x": 392, "y": 84, "w": 40, "h": 44 }
+    },
+    "sign-right": {
+      "frame": { "x": 464, "y": 84, "w": 40, "h": 44 }
+    },
+    "sign-bottom-right": {
+      "frame": { "x": 520, "y": 84, "w": 40, "h": 44 }
+    },
+    "pole": {
+      "frame": { "x": 600, "y": 92, "w": 8, "h": 36  }
+    }
+  },
+  "meta": {
+    "app": "https://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "tiles.png",
+    "format": "RGBA8888",
+      "size": {
+        "w": 1004,
+        "h": 620
+      },
+    "scale": "1"
+    }
+  }
+}
