@@ -56,16 +56,46 @@
     },
     "pole": {
       "frame": { "x": 600, "y": 92, "w": 8, "h": 36  }
-    }
+    },
+    "head": {
+      "frame": { "x": 720, "y": 108, "w": 20, "h": 20 }
+    },
+    "head-on-spike": {
+      "frame": { "x": 792, "y": 32, "w": 20, "h": 96 }
+    },
+    "head-2": {
+      "frame": { "x": 840, "y": 108, "w": 20, "h": 20 }
+    },
+    "2-heads-on-spike": {
+      "frame": { "x": 860, "y": 8, "w": 32, "h": 120 }
+    },
+    "spikes-up": {
+      "frame": { "x": 900, "y": 412, "w": 56, "h": 36 }
+    },
+    "spikes-left": {
+      "frame": { "x": 860, "y": 452, "w": 36, "h": 56 }
+    },
+    "spikes-right": {
+      "frame": { "x": 960, "y": 452, "w": 36, "h": 56 }
+    },
+    "spikes-down": {
+      "frame": { "x": 900, "y": 512, "w": 56, "h": 36 }
+    },
+    "spikes-retracted": {
+      "frame": { "x": 712, "y": 572, "w": 52, "h": 4 }
+    },
+    "spikes-partially-retracted": {
+      "frame": { "x": 776, "y": 560, "w": 52, "h": 16 }
+    },
+    "bridge": {
+      "frame": { "x": 640, "y": 448, "w": 192, "h": 48 }
   },
   "meta": {
-    "app": "https://www.codeandweb.com/texturepacker",
-    "version": "1.0",
     "image": "tiles.png",
     "format": "RGBA8888",
       "size": {
-        "w": 1004,
-        "h": 620
+        "w": 1024,
+        "h": 640
       },
     "scale": "1"
     }
