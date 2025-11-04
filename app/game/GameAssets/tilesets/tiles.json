@@ -89,15 +89,15 @@
     },
     "bridge": {
       "frame": { "x": 640, "y": 448, "w": 192, "h": 48 }
+    }
   },
   "meta": {
     "image": "tiles.png",
     "format": "RGBA8888",
-      "size": {
-        "w": 1024,
-        "h": 640
-      },
+    "size": {
+      "w": 1024,
+      "h": 640
+    },
     "scale": "1"
-    }
   }
 }
