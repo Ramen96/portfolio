@@ -1,11 +1,13 @@
 "use client";
 import { useEffect } from "react";
-import { Application, Graphics } from 'pixi.js';
+import { Application, Container, Sprite, Assets, Texture, Rectangle } from 'pixi.js';
 import { Player } from "./GameUtils/classes/player.js"; 
 import { InputManager } from "./GameUtils/classes/inputManager.js";
 import { PhysicsEngine } from "./GameUtils/classes/physicsEngine.js";
 import { playerAnimations } from "./GameUtils/Animations/player.js";
 import LevelGenerator from "./GameUtils/levelGenerator.js";
+import tilesPNG from './GameAssets/tilesets/tiles.png';
+import tilesAtlas from './GameAssets/tilesets/tiles.json';
 
 export default function Game() {
   useEffect(() => {
@@ -24,19 +26,25 @@ export default function Game() {
       const levelGenerator = new LevelGenerator(levelWidth, levelHeight);
       const levelGrid = levelGenerator.generateCave();
 
-      levelGraphics = new Graphics();
-      app.stage.addChild(levelGraphics);
+      // Create container for level tiles
+      const levelContainer = new Container();
+      app.stage.addChild(levelContainer);
 
-      // Draw the level
-      levelGraphics.beginFill(0x654321); 
+      // Load the tile texture
+      const tileTexture = await Assets.load(tilesPNG);
+      
+      // Draw the level using tiles
       for (let y = 0; y < levelHeight; y++) {
         for (let x = 0; x < levelWidth; x++) {
           if (levelGrid[y][x] === 1) {
-            levelGraphics.drawRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            const tile = new Sprite(tileTexture);
+            tile.width = TILE_SIZE;
+            tile.height = TILE_SIZE;
+            tile.position.set(x * TILE_SIZE, y * TILE_SIZE);
+            levelContainer.addChild(tile);
           }
         }
       }
-      levelGraphics.endFill();
 
       // find spawn position
       let spawnX = app.screen.width / 2;
