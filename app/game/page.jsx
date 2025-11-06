@@ -6,10 +6,8 @@ import { InputManager } from "./GameUtils/classes/inputManager.js";
 import { PhysicsEngine } from "./GameUtils/classes/physicsEngine.js";
 import { playerAnimations } from "./GameUtils/Animations/player.js";
 import LevelGenerator from "./GameUtils/levelGenerator.js";
-import brickLight from './GameAssets/tilesets/brick-light.png';
+import { tileTextures } from "./GameUtils/tileset/tileset.js";
 import brick from './GameAssets/tilesets/brick.png';
-import ground1 from './GameAssets/tilesets/ground1.png';
-import ground2 from './GameAssets/tilesets/ground2.png';
 
 export default function Game() {
   useEffect(() => {
@@ -46,9 +44,9 @@ export default function Game() {
       // Load tile textures
       const [brickTexture, brickLightTexture, ground1Texture, ground2Texture] = await Promise.all([
         // Assets.load(brick),
-        Assets.load(brickLight),
+        Assets.load(tileTextures.brickLight),
         // Assets.load(ground1),
-        Assets.load(ground2)
+        Assets.load(tileTextures.ground2)
       ]);
       
       // Draw the level using tiles
