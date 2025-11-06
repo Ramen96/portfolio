@@ -7,7 +7,6 @@ import { PhysicsEngine } from "./GameUtils/classes/physicsEngine.js";
 import { playerAnimations } from "./GameUtils/Animations/player.js";
 import LevelGenerator from "./GameUtils/levelGenerator.js";
 import { tileTextures } from "./GameUtils/tileset/tileset.js";
-import brick from './GameAssets/tilesets/brick.png';
 
 export default function Game() {
   useEffect(() => {
@@ -22,7 +21,7 @@ export default function Game() {
       // Per docs -- Create a tiling background sprite
       // need to figure out a way to fill the background with this
       const tilingBackgroundTexture = new TilingSprite({
-        texture: brick,
+        texture: tileTextures.brick,
         width: TILE_SIZE,
         height: TILE_SIZE,
         resizeTo: window
