@@ -1,13 +1,15 @@
 "use client";
 import { useEffect } from "react";
-import { Application, Container, Sprite, Assets, Texture, Rectangle } from 'pixi.js';
+import { Application, Container, Sprite, Assets, TilingSprite, Texture, Rectangle } from 'pixi.js';
 import { Player } from "./GameUtils/classes/player.js"; 
 import { InputManager } from "./GameUtils/classes/inputManager.js";
 import { PhysicsEngine } from "./GameUtils/classes/physicsEngine.js";
 import { playerAnimations } from "./GameUtils/Animations/player.js";
 import LevelGenerator from "./GameUtils/levelGenerator.js";
-import tilesPNG from './GameAssets/tilesets/tiles.png';
-import tilesAtlas from './GameAssets/tilesets/tiles.json';
+import brickLight from './GameAssets/tilesets/brick-light.png';
+import brick from './GameAssets/tilesets/brick.png';
+import ground1 from './GameAssets/tilesets/ground1.png';
+import ground2 from './GameAssets/tilesets/ground2.png';
 
 export default function Game() {
   useEffect(() => {
@@ -17,7 +19,17 @@ export default function Game() {
     (async () => {
       // Application setup
       app = new Application();
-      await app.init({ background: '#1099bb', resizeTo: window });
+      await app.init({ resizeTo: window });
+
+      // Per docs -- Create a tiling background sprite
+      // need to figure out a way to fill the background with this
+      const tilingBackgroundTexture = new TilingSprite({
+        texture: brick,
+        width: TILE_SIZE,
+        height: TILE_SIZE,
+        resizeTo: window
+      });
+
       document.body.appendChild(app.canvas);
 
       // level generation
@@ -28,16 +40,33 @@ export default function Game() {
 
       // Create container for level tiles
       const levelContainer = new Container();
+      // app.stage.addChild(tilingBackgroundTexture);
       app.stage.addChild(levelContainer);
 
-      // Load the tile texture
-      const tileTexture = await Assets.load(tilesPNG);
+      // Load tile textures
+      const [brickTexture, brickLightTexture, ground1Texture, ground2Texture] = await Promise.all([
+        // Assets.load(brick),
+        Assets.load(brickLight),
+        // Assets.load(ground1),
+        Assets.load(ground2)
+      ]);
       
       // Draw the level using tiles
       for (let y = 0; y < levelHeight; y++) {
         for (let x = 0; x < levelWidth; x++) {
           if (levelGrid[y][x] === 1) {
-            const tile = new Sprite(tileTexture);
+            let texture;
+            
+            // Choose texture based on position and surroundings
+            if (y > 0 && levelGrid[y-1][x] === 0) {
+              // Use ground textures for top surfaces
+              texture = Math.random() < 0.5 ? ground1Texture : ground2Texture;
+            } else {
+              // Use brick textures for walls and internal blocks
+              texture = Math.random() < 0.7 ? brickTexture : brickLightTexture;
+            }
+
+            const tile = new Sprite(texture);
             tile.width = TILE_SIZE;
             tile.height = TILE_SIZE;
             tile.position.set(x * TILE_SIZE, y * TILE_SIZE);
