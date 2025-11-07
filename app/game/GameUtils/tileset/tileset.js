@@ -1,3 +1,4 @@
+import blankWall from "../../GameAssets/tilesets/blank-wall.png";
 import brick from "../../GameAssets/tilesets/brick.png";
 import brickLight from "../../GameAssets/tilesets/brick-light.png";
 import ground1 from "../../GameAssets/tilesets/ground1.png";
@@ -23,6 +24,7 @@ import pole from "../../GameAssets/tilesets/pole.png";
 import rail from "../../GameAssets/tilesets/rail.png";
 
 export const tileTextures = {
+  blankWall: blankWall,
   brick: brick,
   brickLight: brickLight,
   ground1: ground1,
