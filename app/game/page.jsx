@@ -17,17 +17,21 @@ export default function Game() {
       // Application setup
       app = new Application();
       await app.init({ resizeTo: window });
-
-      // Per docs -- Create a tiling background sprite
-      // need to figure out a way to fill the background with this
-      const tilingBackgroundTexture = new TilingSprite({
-        texture: tileTextures.brick,
-        width: TILE_SIZE,
-        height: TILE_SIZE,
-        resizeTo: window
-      });
-
       document.body.appendChild(app.canvas);
+
+      // Load all textures first
+      const loadedTextures = {};
+      for (const [key, path] of Object.entries(tileTextures)) {
+        loadedTextures[key] = await Assets.load(path);
+      }
+
+      // Create tiling background sprite
+      const tilingBackground = new TilingSprite({
+        texture: loadedTextures.brick,
+        width: app.screen.width,
+        height: app.screen.height,
+      });
+      app.stage.addChild(tilingBackground);
 
       // level generation
       const levelWidth = Math.ceil(app.screen.width / TILE_SIZE);
@@ -37,16 +41,7 @@ export default function Game() {
 
       // Create container for level tiles
       const levelContainer = new Container();
-      // app.stage.addChild(tilingBackgroundTexture);
       app.stage.addChild(levelContainer);
-
-      // Load tile textures
-      const [brickTexture, brickLightTexture, ground1Texture, ground2Texture] = await Promise.all([
-        // Assets.load(brick),
-        Assets.load(tileTextures.brickLight),
-        // Assets.load(ground1),
-        Assets.load(tileTextures.ground2)
-      ]);
       
       // Draw the level using tiles
       for (let y = 0; y < levelHeight; y++) {
@@ -57,10 +52,10 @@ export default function Game() {
             // Choose texture based on position and surroundings
             if (y > 0 && levelGrid[y-1][x] === 0) {
               // Use ground textures for top surfaces
-              texture = Math.random() < 0.5 ? ground1Texture : ground2Texture;
+              texture = Math.random() < 0.5 ? loadedTextures.ground1 : loadedTextures.ground2;
             } else {
               // Use brick textures for walls and internal blocks
-              texture = Math.random() < 0.7 ? brickTexture : brickLightTexture;
+              texture = Math.random() < 0.7 ? loadedTextures.ground2 : loadedTextures.ground2;
             }
 
             const tile = new Sprite(texture);
@@ -122,7 +117,7 @@ export default function Game() {
       });
       
       // main game loop 
-      app.ticker.maxFPS = 120;
+      app.ticker.maxFPS = 240;
       app.ticker.add((time) => {
         const delta = time.deltaTime;
 
