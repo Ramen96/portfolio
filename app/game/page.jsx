@@ -106,8 +106,11 @@ export default function Game() {
             tile.position.set(x * TILE_SIZE, y * TILE_SIZE);
 
             // add tint based on depth
-            let tintAmount = Math.min(depth * 0x111111, 0x666666); 
-            tile.tint = 0xFFFFFF - tintAmount;
+            if (!(y > 0 && levelGrid[y - 1][x] === 0)) {
+              let tintAmount = Math.min(depth * 0x111111, 0x666666);
+              tile.tint = 0xFFFFFF - tintAmount;
+            }
+
             levelContainer.addChild(tile);
           }
         }
