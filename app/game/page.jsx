@@ -54,14 +54,6 @@ export default function Game() {
       mask.fill(0xffffff);
       variationLayer.mask = mask;
 
-
-      // const tilingBackground = new TilingSprite({
-      //   texture: (() => Math.random() > 0.7 ? loadedTextures.blankWall : loadedTextures.brick ),
-      //   width: app.screen.width,
-      //   height: app.screen.height,
-      // });
-      // app.stage.addChild(tilingBackground);
-
       // level generation
       const levelWidth = Math.ceil(app.screen.width / TILE_SIZE);
       const levelHeight = Math.ceil(app.screen.height / TILE_SIZE);
