@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { Application, Container, Sprite, Assets, TilingSprite, Texture, Rectangle } from 'pixi.js';
+import { Application, Container, Sprite, Assets, TilingSprite, Texture, Rectangle, Graphics } from 'pixi.js';
 import { Player } from "./GameUtils/classes/player.js"; 
 import { InputManager } from "./GameUtils/classes/inputManager.js";
 import { PhysicsEngine } from "./GameUtils/classes/physicsEngine.js";
@@ -26,12 +26,41 @@ export default function Game() {
       }
 
       // Create tiling background sprite
-      const tilingBackground = new TilingSprite({
+      const baseLayer = new TilingSprite({
         texture: loadedTextures.brick,
+        width: app.screen.width,
+        height: app.screen.height
+      });
+
+      app.stage.addChild(baseLayer);
+
+      const variationLayer = new TilingSprite({
+        texture: loadedTextures.blankWall,
         width: app.screen.width,
         height: app.screen.height,
       });
-      app.stage.addChild(tilingBackground);
+
+      const mask = new Graphics();
+      const bgTileSize = 64;
+
+      for (let y = 0; y < app.screen.height; y++) {
+        for (let x = 0; x < app.screen.width; x++) {
+          if (Math.random() < 0.7) { // Goal is to print a blank wall more than 70% of the time
+            mask.rect(x, y, bgTileSize, bgTileSize);
+          }
+        }
+      }
+
+      mask.fill(0xffffff);
+      variationLayer.mask = mask;
+
+
+      // const tilingBackground = new TilingSprite({
+      //   texture: (() => Math.random() > 0.7 ? loadedTextures.blankWall : loadedTextures.brick ),
+      //   width: app.screen.width,
+      //   height: app.screen.height,
+      // });
+      // app.stage.addChild(tilingBackground);
 
       // level generation
       const levelWidth = Math.ceil(app.screen.width / TILE_SIZE);
@@ -42,26 +71,51 @@ export default function Game() {
       // Create container for level tiles
       const levelContainer = new Container();
       app.stage.addChild(levelContainer);
-      
+
       // Draw the level using tiles
+      const dirtTextures = []; // add later
+      const surfaceTextures = [loadedTextures.ground2, loadedTextures.ground1]; 
+      const brickTextures = [loadedTextures.brick, loadedTextures.brickWall];
+
+      function randomChoice(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
       for (let y = 0; y < levelHeight; y++) {
         for (let x = 0; x < levelWidth; x++) {
           if (levelGrid[y][x] === 1) {
             let texture;
-            
-            // Choose texture based on position and surroundings
-            if (y > 0 && levelGrid[y-1][x] === 0) {
-              // Use ground textures for top surfaces
-              texture = Math.random() < 0.5 ? loadedTextures.ground1 : loadedTextures.ground2;
-            } else {
-              // Use brick textures for walls and internal blocks
-              texture = Math.random() < 0.7 ? loadedTextures.ground2 : loadedTextures.ground2;
+            let depth = 0;
+
+            if (y > 0 && levelGrid[y - 1][x] === 0) {
+              if ((x > 0 && levelGrid[y - 1][x - 1] === 0) || (x < levelWidth - 1 && levelGrid[y - 1][x + 1] === 0 )) {
+                texture = loadedTextures.ground2;
+              } else {
+                texture = randomChoice(surfaceTextures);
+              }
+            } 
+
+            else {
+              for (let dy = y - 1; dy >= 0; dy--) {
+                if (levelGrid[dy][x] === 1) depth++;
+                else break;
+              }
+
+              if (depth < 3) {
+                texture = loadedTextures.ground2;
+              } else {
+                texture = loadedTextures.blankWall;
+              }
             }
 
             const tile = new Sprite(texture);
             tile.width = TILE_SIZE;
             tile.height = TILE_SIZE;
             tile.position.set(x * TILE_SIZE, y * TILE_SIZE);
+
+            // add tint based on depth
+            let tintAmount = Math.min(depth * 0x111111, 0x666666); 
+            tile.tint = 0xFFFFFF - tintAmount;
             levelContainer.addChild(tile);
           }
         }
