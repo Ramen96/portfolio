@@ -54,6 +54,15 @@ export default function Game() {
       mask.fill(0xffffff);
       variationLayer.mask = mask;
 
+      // GET DONE LIST
+      // 1. Randomize placement of bricks and background wall textures
+      //    - Base: 90% plain wall, 10% bricks
+      //    - Check neighboring tiles to create brick clusters
+      //        - Increase chance by 15-20% per brick neighbor
+      //            - Max: 90% with 4 neighbors
+      // 2. Make walker check horizontal depth for placement of surface tiles
+      //    - Depth based textures should only apply vertically, not horizontally
+
       // level generation
       const levelWidth = Math.ceil(app.screen.width / TILE_SIZE);
       const levelHeight = Math.ceil(app.screen.height / TILE_SIZE);
