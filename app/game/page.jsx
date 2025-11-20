@@ -77,6 +77,7 @@ export default function Game() {
       const dirtTextures = []; // add later
       const surfaceTextures = [loadedTextures.ground2, loadedTextures.ground1]; 
       const brickTextures = [loadedTextures.brick, loadedTextures.brickWall];
+      let depthY = 0;
 
       function randomChoice(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
@@ -86,27 +87,25 @@ export default function Game() {
         for (let x = 0; x < levelWidth; x++) {
           if (levelGrid[y][x] === 1) {
             let texture;
-            let depth = 0;
 
-            if (y > 0 && levelGrid[y - 1][x] === 0) {
-              if ((x > 0 && levelGrid[y - 1][x - 1] === 0) || (x < levelWidth - 1 && levelGrid[y - 1][x + 1] === 0 )) {
+            if ( // check x and y axis for existing tiles
+                (y > 0 && levelGrid[y - 1][x] === 0) ||
+                ((x > 0 && levelGrid[y][x - 1] === 0) || (x < levelWidth - 1 && levelGrid[y][x + 1] === 0))
+              ) {
+                texture = randomChoice(surfaceTextures);
+              // Check corners
+              if ((y > 0 && x > 0 && levelGrid[y - 1][x - 1] === 0) || (y > 0 && x < levelWidth - 1 && levelGrid[y - 1][x + 1] === 0)) {
                 texture = loadedTextures.ground2;
               } else {
                 texture = randomChoice(surfaceTextures);
               }
-            } 
+            } else {
+              texture = loadedTextures.blankWall;
+            }
 
-            else {
-              for (let dy = y - 1; dy >= 0; dy--) {
-                if (levelGrid[dy][x] === 1) depth++;
-                else break;
-              }
-
-              if (depth < 3) {
-                texture = loadedTextures.ground2;
-              } else {
-                texture = loadedTextures.blankWall;
-              }
+            for (let dy = y - 1; dy >= 0; dy--) { // Fix needed: this is checking from the top of the screen not where the top of a surface
+              if (levelGrid[dy][x] === 1) depthY++;
+              else break;
             }
 
             const tile = new Sprite(texture);
@@ -116,7 +115,7 @@ export default function Game() {
 
             // add tint based on depth
             if (!(y > 0 && levelGrid[y - 1][x] === 0)) {
-              let tintAmount = Math.min(depth * 0x111111, 0x666666);
+              let tintAmount = Math.min(depthY * 0x111111, 0x666666);
               tile.tint = 0xFFFFFF - tintAmount;
             }
 
