@@ -25,43 +25,64 @@ export default function Game() {
         loadedTextures[key] = await Assets.load(path);
       }
 
+      // Tiles
+      const dirtTextures = []; // add later
+      const surfaceTextures = [loadedTextures.ground2, loadedTextures.ground1]; 
+      const brickTextures = [loadedTextures.brick, loadedTextures.brickWall];
+
       // Create tiling background sprite
-      const baseLayer = new TilingSprite({
-        texture: loadedTextures.brick,
-        width: app.screen.width,
-        height: app.screen.height
-      });
-
-      app.stage.addChild(baseLayer);
-
-      const variationLayer = new TilingSprite({
-        texture: loadedTextures.blankWall,
-        width: app.screen.width,
-        height: app.screen.height,
-      });
-
-      const mask = new Graphics();
       const bgTileSize = 64;
+      const cols = Math.ceil(app.screen.width / bgTileSize);
+      const rows = Math.ceil(app.screen.height / bgTileSize);
 
-      for (let y = 0; y < app.screen.height; y++) {
-        for (let x = 0; x < app.screen.width; x++) {
-          if (Math.random() < 0.7) { // Goal is to print a blank wall more than 70% of the time
-            mask.rect(x, y, bgTileSize, bgTileSize);
-          }
+      // Probabilities / tuning
+      const BASE_BRICK_PROB = 0.10;      // 10% base chance for a brick
+      const INC_PER_NEIGHBOR = 0.18;     // increase per brick neighbor (15-20% range -> 0.18)
+      const MAX_BRICK_PROB = 0.90;       // cap at 90% when surrounded
+
+      // First pass: random placement using base probability
+      const bgGrid = Array.from({ length: rows }, () => Array(cols).fill(false));
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          bgGrid[r][c] = Math.random() < BASE_BRICK_PROB;
         }
       }
 
-      mask.fill(0xffffff);
-      variationLayer.mask = mask;
+      // Second pass: grow clusters by re-evaluating tiles based on neighbors
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (bgGrid[r][c]) continue; // already a brick
+          let neighbors = 0;
+          if (r > 0 && bgGrid[r - 1][c]) neighbors++;        // north
+          if (r < rows - 1 && bgGrid[r + 1][c]) neighbors++;  // south
+          if (c > 0 && bgGrid[r][c - 1]) neighbors++;        // west
+          if (c < cols - 1 && bgGrid[r][c + 1]) neighbors++;  // east
 
-      // GET DONE LIST
-      // 1. Randomize placement of bricks and background wall textures
-      //    - Base: 90% plain wall, 10% bricks
-      //    - Check neighboring tiles to create brick clusters
-      //        - Increase chance by 15-20% per brick neighbor
-      //            - Max: 90% with 4 neighbors
-      // 2. Make walker check horizontal depth for placement of surface tiles
-      //    - Depth based textures should only apply vertically, not horizontally
+          const prob = Math.min(BASE_BRICK_PROB + neighbors * INC_PER_NEIGHBOR, MAX_BRICK_PROB);
+          if (Math.random() < prob) bgGrid[r][c] = true;
+        }
+      }
+
+      // Draw base blank-wall layer (tiled) and then place brick sprites where bgGrid is true.
+      const baseLayer = new TilingSprite({
+        texture: loadedTextures.blankWall,
+        width: app.screen.width,
+        height: app.screen.height
+      });
+      app.stage.addChild(baseLayer);
+
+      const brickBgContainer = new Container();
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (!bgGrid[r][c]) continue;
+          const s = new Sprite(randomChoice(brickTextures));
+          s.width = bgTileSize;
+          s.height = bgTileSize;
+          s.position.set(c * bgTileSize, r * bgTileSize);
+          brickBgContainer.addChild(s);
+        }
+      }
+      app.stage.addChild(brickBgContainer);
 
       // level generation
       const levelWidth = Math.ceil(app.screen.width / TILE_SIZE);
@@ -73,27 +94,31 @@ export default function Game() {
       const levelContainer = new Container();
       app.stage.addChild(levelContainer);
 
-      // Draw the level using tiles
-      const dirtTextures = []; // add later
-      const surfaceTextures = [loadedTextures.ground2, loadedTextures.ground1]; 
-      const brickTextures = [loadedTextures.brick, loadedTextures.brickWall];
-      let depthY = 0;
-
       function randomChoice(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
       }
 
-      for (let y = 0; y < levelHeight; y++) {
-        for (let x = 0; x < levelWidth; x++) {
-          if (levelGrid[y][x] === 1) {
-            let texture;
+      const MAX_DARKEN = 0.6; 
+      const DARKEN_PER_LAYER = 0.08; 
 
-            if ( // check x and y axis for existing tiles
-                (y > 0 && levelGrid[y - 1][x] === 0) ||
-                ((x > 0 && levelGrid[y][x - 1] === 0) || (x < levelWidth - 1 && levelGrid[y][x + 1] === 0))
-              ) {
-                texture = randomChoice(surfaceTextures);
-              // Check corners
+      for (let x = 0; x < levelWidth; x++) {
+        let depthCounter = 0;
+        for (let y = 0; y < levelHeight; y++) {
+          if (levelGrid[y][x] === 1) {
+            // determine if this is a surface tile (tile above is empty)
+            const isSurface = (y > 0 && levelGrid[y - 1][x] === 0);
+            if (isSurface) {
+              depthCounter = 1;
+            } else {
+              depthCounter = depthCounter > 0 ? depthCounter + 1 : 1;
+            }
+
+            // choose texture
+            let texture;
+            if (
+              (y > 0 && levelGrid[y - 1][x] === 0) ||
+              ((x > 0 && levelGrid[y][x - 1] === 0) || (x < levelWidth - 1 && levelGrid[y][x + 1] === 0))
+            ) {
               if ((y > 0 && x > 0 && levelGrid[y - 1][x - 1] === 0) || (y > 0 && x < levelWidth - 1 && levelGrid[y - 1][x + 1] === 0)) {
                 texture = loadedTextures.ground2;
               } else {
@@ -103,23 +128,25 @@ export default function Game() {
               texture = loadedTextures.blankWall;
             }
 
-            for (let dy = y - 1; dy >= 0; dy--) { // Fix needed: this is checking from the top of the screen not where the top of a surface
-              if (levelGrid[dy][x] === 1) depthY++;
-              else break;
-            }
-
             const tile = new Sprite(texture);
             tile.width = TILE_SIZE;
             tile.height = TILE_SIZE;
             tile.position.set(x * TILE_SIZE, y * TILE_SIZE);
 
-            // add tint based on depth
-            if (!(y > 0 && levelGrid[y - 1][x] === 0)) {
-              let tintAmount = Math.min(depthY * 0x111111, 0x666666);
-              tile.tint = 0xFFFFFF - tintAmount;
+            // apply tint for tiles below the surface
+            const depthBelow = Math.max(0, depthCounter - 1);
+            if (depthBelow > 0) {
+              const darken = Math.min(depthBelow * DARKEN_PER_LAYER, MAX_DARKEN);
+              const factor = 1 - darken; // brightness multiplier
+              const c = Math.round(255 * factor);
+              tile.tint = (c << 16) | (c << 8) | c;
+            } else {
+              tile.tint = 0xFFFFFF; // surface tile: no tint
             }
 
             levelContainer.addChild(tile);
+          } else {
+            depthCounter = 0; // reset when encountering empty space
           }
         }
       }
